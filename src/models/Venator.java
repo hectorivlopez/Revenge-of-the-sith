@@ -78,6 +78,101 @@ public class Venator {
         int[][] scaledBottomRight = Transformations.scale3D(rotatedBottomRight[0], rotatedBottomRight[1], rotatedBottomRight[2], xc, yc, zc, false, scale, scale, scale);
 
 
+
+        int[][] right1 = new int[][]{
+                new int[]{x0, x0 + 420, x0 + 420, x0},
+                new int[]{y0 - 32, y0 - 137, y0 - 137, y0 -32},
+                new int[]{z0 - 8, z0 - 8, z0 + 8, z0 + 8},
+        };
+
+        int[][] rotatedRight1 = rotate(right1, angles, x0, y0, z0);
+        int[][] scaledRight1 = Transformations.scale3D(rotatedRight1[0], rotatedRight1[1], rotatedRight1[2], xc, yc, zc, false, scale, scale, scale);
+
+        int[][] right2 = new int[][]{
+                new int[]{x0 + 420, x0 + 485, x0 + 485, x0 + 420},
+                new int[]{y0 - 137, y0 - 92, y0 - 92, y0 - 137},
+                new int[]{z0 - 8, z0 - 23, z0 + 23, z0 + 8},
+        };
+
+        int[][] rotatedRight2 = rotate(right2, angles, x0, y0, z0);
+        int[][] scaledRight2 = Transformations.scale3D(rotatedRight2[0], rotatedRight2[1], rotatedRight2[2], xc, yc, zc, false, scale, scale, scale);
+
+        int[][] right3 = new int[][]{
+                new int[]{x0 + 485, x0 + 560, x0 + 560, x0 + 485},
+                new int[]{y0 - 92, y0 - 107, y0 - 107, y0 - 92},
+                new int[]{z0 - 23, z0 - 23, z0 + 23, z0 + 23},
+        };
+
+        int[][] rotatedRight3 = rotate(right3, angles, x0, y0, z0);
+        int[][] scaledRight3 = Transformations.scale3D(rotatedRight3[0], rotatedRight3[1], rotatedRight3[2], xc, yc, zc, false, scale, scale, scale);
+
+        int[][] right4 = new int[][]{
+                new int[]{x0 + 560, x0 + 675, x0 + 675, x0 + 560},
+                new int[]{y0 - 107, y0 - 217, y0 - 217, y0 - 107},
+                new int[]{z0 - 23, z0 - 5, z0 + 5, z0 + 23},
+        };
+
+        int[][] rotatedRight4 = rotate(right4, angles, x0, y0, z0);
+        int[][] scaledRight4 = Transformations.scale3D(rotatedRight4[0], rotatedRight4[1], rotatedRight4[2], xc, yc, zc, false, scale, scale, scale);
+
+        int[][] right5 = new int[][]{
+                new int[]{x0 + 675, x0 + 710, x0 + 710, x0 + 675},
+                new int[]{y0 - 217, y0 - 217, y0 - 217, y0 - 217},
+                new int[]{z0 - 5, z0 - 5, z0 + 5, z0 + 5},
+        };
+
+        int[][] rotatedRight5 = rotate(right5, angles, x0, y0, z0);
+        int[][] scaledRight5 = Transformations.scale3D(rotatedRight5[0], rotatedRight5[1], rotatedRight5[2], xc, yc, zc, false, scale, scale, scale);
+
+
+        int[][] left1 = new int[][]{
+                new int[]{x0, x0 + 420, x0 + 420, x0},
+                new int[]{y0 + 32, y0 + 137, y0 + 137, y0 + 32},
+                new int[]{z0 - 8, z0 - 8, z0 + 8, z0 + 8},
+        };
+
+        int[][] rotatedLeft1 = rotate(left1, angles, x0, y0, z0);
+        int[][] scaledLeft1 = Transformations.scale3D(rotatedLeft1[0], rotatedLeft1[1], rotatedLeft1[2], xc, yc, zc, false, scale, scale, scale);
+
+        int[][] left2 = new int[][]{
+                new int[]{x0 + 420, x0 + 485, x0 + 485, x0 + 420},
+                new int[]{y0 + 137, y0 + 92, y0 + 92, y0 + 137},
+                new int[]{z0 - 8, z0 - 23, z0 + 23, z0 + 8},
+        };
+
+        int[][] rotatedLeft2 = rotate(left2, angles, x0, y0, z0);
+        int[][] scaledLeft2 = Transformations.scale3D(rotatedLeft2[0], rotatedLeft2[1], rotatedLeft2[2], xc, yc, zc, false, scale, scale, scale);
+
+        int[][] left3 = new int[][]{
+                new int[]{x0 + 485, x0 + 560, x0 + 560, x0 + 485},
+                new int[]{y0 + 92, y0 + 107, y0 + 107, y0 + 92},
+                new int[]{z0 - 23, z0 - 23, z0 + 23, z0 + 23},
+        };
+
+        int[][] rotatedLeft3 = rotate(left3, angles, x0, y0, z0);
+        int[][] scaledLeft3 = Transformations.scale3D(rotatedLeft3[0], rotatedLeft3[1], rotatedLeft3[2], xc, yc, zc, false, scale, scale, scale);
+
+        int[][] left4 = new int[][]{
+                new int[]{x0 + 560, x0 + 675, x0 + 675, x0 + 560},
+                new int[]{y0 + 107, y0 + 217, y0 + 217, y0 + 107},
+                new int[]{z0 - 23, z0 - 5, z0 + 5, z0 + 23},
+        };
+
+        int[][] rotatedLeft4 = rotate(left4, angles, x0, y0, z0);
+        int[][] scaledLeft4 = Transformations.scale3D(rotatedLeft4[0], rotatedLeft4[1], rotatedLeft4[2], xc, yc, zc, false, scale, scale, scale);
+
+        int[][] left5 = new int[][]{
+                new int[]{x0 + 675, x0 + 710, x0 + 710, x0 + 675},
+                new int[]{y0 + 217, y0 + 217, y0 + 217, y0 + 217},
+                new int[]{z0 - 5, z0 - 5, z0 + 5, z0 + 5},
+        };
+
+        int[][] rotatedLeft5 = rotate(left5, angles, x0, y0, z0);
+        int[][] scaledLeft5 = Transformations.scale3D(rotatedLeft5[0], rotatedLeft5[1], rotatedLeft5[2], xc, yc, zc, false, scale, scale, scale);
+
+
+
+
         int[] p1 = new int[]{topRed[0][0], topRed[1][2], topRed[2][0]};
         int[] p2 = new int[]{topRed[0][2], topRed[1][2], topRed[2][0]};
 
@@ -94,13 +189,27 @@ public class Venator {
             }
             System.out.println("");
         }*/
-        surface(scaledTopLeft, -Math.PI /2, p1, p2, director, projection, 1, Color.white, buffer);
-        surface(scaledTopRight, -Math.PI /2, p1, p2, director, projection, -1, Color.white, buffer);
-        surface(scaledTopCenter, -Math.PI /2, p1, p2, director, projection, 1, Color.white, buffer);
-        surface(scaledTopRed, -Math.PI /2, p1, p2, director, projection, 1, Color.red, buffer);
-        surface(scaledBottomLeft, -Math.PI /2, p1, p2, director, projection, -1, Color.white, buffer);
-        surface(scaledBottomRight, -Math.PI /2, p1, p2, director, projection, 1, Color.white, buffer);
+        surface(scaledTopLeft, 0, p1, p2, director, projection, 1, Color.white, buffer);
+        surface(scaledTopRight, 0, p1, p2, director, projection, -1, Color.white, buffer);
 
+        prism(scaledTopCenter, 4, director, 1, null, projection, 1, Color.white, buffer);
+        prism(scaledTopRed, 4, director, 1, null, projection, 1, Color.red, buffer);
+        //surface(scaledTopRed, 0, p1, p2, director, projection, 1, Color.red, buffer);
+
+        surface(scaledBottomLeft, 0, p1, p2, director, projection, -1, Color.white, buffer);
+        surface(scaledBottomRight, 0, p1, p2, director, projection, 1, Color.white, buffer);
+
+        surface(scaledRight1, 0, p1, p2, director, projection, 1, Color.white, buffer);
+        surface(scaledRight2, 0, p1, p2, director, projection, 1, Color.white, buffer);
+        surface(scaledRight3, 0, p1, p2, director, projection, 1, Color.white, buffer);
+        surface(scaledRight4, 0, p1, p2, director, projection, 1, Color.white, buffer);
+        surface(scaledRight5, 0, p1, p2, director, projection, 1, Color.white, buffer);
+
+        surface(scaledLeft1, 0, p1, p2, director, projection, 1, Color.white, buffer);
+        surface(scaledLeft2, 0, p1, p2, director, projection, 1, Color.white, buffer);
+        surface(scaledLeft3, 0, p1, p2, director, projection, 1, Color.white, buffer);
+        surface(scaledLeft4, 0, p1, p2, director, projection, 1, Color.white, buffer);
+        surface(scaledLeft5, 0, p1, p2, director, projection, 1, Color.white, buffer);
     }
 
     private static int[][] rotate(int[][] face, double[] angles, int x0, int y0, int z0) {

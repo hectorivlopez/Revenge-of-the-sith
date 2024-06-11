@@ -139,7 +139,7 @@ public class CanvasPanel extends JPanel {
         grid();
         //axis(director, 1, buffer);
 
-        Venator.draw(100, 250, 100, new double[]{0, 0, angle}, 1,  director, "perspective", buffer);
+        Venator.draw(100, 250, 100, new double[]{3 * Math.PI / 2, angle, 0}, 1,  director, "perspective", buffer);
 
         g.drawImage(buffer, 0, 0, this);
     }
