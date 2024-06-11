@@ -855,9 +855,13 @@ public class Draw {
 
         // Now fill the polygon using flood fill from the centroid
         if (center == null) {
-            Utils.floodFill(centroidX, centroidY, color, buffer);
+            if (Utils.isPointInPolygon(centroidX, centroidY, xPoints, yPoints)) {
+                Utils.floodFill(centroidX, centroidY, color, buffer);
+            }
         } else {
-            Utils.floodFill(center[0], center[1], color, buffer);
+            if (Utils.isPointInPolygon(center[0], center[1], xPoints, yPoints)) {
+                Utils.floodFill(center[0], center[1], color, buffer);
+            }
         }
     }
 
