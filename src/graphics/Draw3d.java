@@ -317,7 +317,7 @@ public class Draw3d {
         }
     }
 
-    public static void surface(int[][] points, double angle, int[] p1, int[] p2, int[] director, String projection, double direction, Color color, BufferedImage buffer) {
+    public static void surface(int[][] points, double angle, int[] p1, int[] p2, int[] director, String projection, double direction, Color borderColor, Color color, BufferedImage buffer) {
         int[][] rotated = rotateAroundLine(
                 points[0],
                 points[1],
@@ -343,7 +343,7 @@ public class Draw3d {
                 directionVector = new double[]{0, 0, 1};
             }
 
-            if (projection.equals("perspective")) {
+            //if (projection.equals("perspective")) {
                 // Calculate the centroid
                 int[] xPoints = rotated[0];
                 int[] yPoints = rotated[1];
@@ -370,17 +370,35 @@ public class Draw3d {
                         director[1] - yc,
                         director[2] - zc
                 };
-            }
+
+                int[][] vec = new int[][] {
+                        new int[]{xc, (int) (xc + perpendicularVector[0])},
+                        new int[]{yc, (int) (yc + perpendicularVector[1])},
+                        new int[]{zc, (int) (zc + perpendicularVector[2])},
+                };
+
+                int[][] proj = projection(
+                        vec,
+                        director,
+                        projection
+                );
+
+
+            //}
 
             double dotProduct = Utils.calculateDotProduct(perpendicularVector, directionVector);
 
             // Drawing
             if (dotProduct > 0) {
+                if(color != null) Draw.fillPolygon(projectedPoints[0], projectedPoints[1], new int[]{proj[0][0], proj[1][0]}, color, buffer);
+                Draw.drawPolygon(projectedPoints[0], projectedPoints[1], borderColor, buffer);
             }
-                Draw.drawPolygon(projectedPoints[0], projectedPoints[1], color, buffer);
+            Draw.fillCircle(proj[0][0], proj[1][0], 3, Color.red, buffer);
+            drawLine(proj[0][0], proj[1][0], proj[0][1], proj[1][1], Color.green, buffer);
         }
         else {
-            Draw.drawPolygon(projectedPoints[0], projectedPoints[1], color, buffer);
+            if(color != null) Draw.fillPolygon(projectedPoints[0], projectedPoints[1], null, color, buffer);
+            Draw.drawPolygon(projectedPoints[0], projectedPoints[1], borderColor, buffer);
         }
 
     }

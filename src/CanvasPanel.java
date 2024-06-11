@@ -19,6 +19,7 @@ public class CanvasPanel extends JPanel {
     public int x;
     public boolean growing;
     public boolean toRight;
+    public Venator venator;
 
     public CanvasPanel(int width, int height) {
         this.buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -68,6 +69,8 @@ public class CanvasPanel extends JPanel {
             }
         }, 10, () -> false);
         moveThread.start();
+
+        this.venator = new Venator(530, 250, 100, 1, new double[]{0, 0, 0});
     }
 
     public void resize(int width, int height) {
@@ -139,7 +142,12 @@ public class CanvasPanel extends JPanel {
         grid();
         //axis(director, 1, buffer);
 
-        Venator.draw(100, 250, 100, new double[]{3 * Math.PI / 2, angle, 0}, 1,  director, "perspective", buffer);
+        venator.angles = new double[]{Math.PI / 2, 0, angle};
+        venator.draw(director, "perspective", buffer, angle);
+
+       /* Venator venator2 = new Venator(530, 350, 100, 1, new double[]{0, 0, 0});
+        venator2.angles = new double[]{Math.PI / 2, 0, Math.PI};
+        venator2.draw(director, "oblique", buffer, angle);*/
 
         g.drawImage(buffer, 0, 0, this);
     }
