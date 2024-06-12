@@ -317,21 +317,35 @@ public class Draw3d {
         }
     }
 
-    public static void surface(int[][] points, double angle, int[] p1, int[] p2, int[] director, String projection, double direction, Color borderColor, Color color, BufferedImage buffer) {
-        int[][] rotated = rotateAroundLine(
-                points[0],
-                points[1],
-                points[2],
-                p1,
-                p2,
-                angle
-        );
+    public static void surface(int[][] points, int[] director, String projection, double direction, boolean develop, Color borderColor, Color color, BufferedImage buffer) {
+        // Calculate the centroid
+        int[] xPoints = points[0];
+        int[] yPoints = points[1];
+        int[] zPoints = points[2];
 
-        int[][] projectedPoints = projection(rotated, director, projection);
+        int numVertices = xPoints.length;
+
+        int xSum = 0;
+        int ySum = 0;
+        int zSum = 0;
+
+        for (int i = 0; i < numVertices; i++) {
+            xSum += xPoints[i];
+            ySum += yPoints[i];
+            zSum += zPoints[i];
+        }
+
+        int xc = (int) ((double) xSum / ((double) numVertices));
+        int yc = (int) ((double) ySum / ((double) numVertices));
+        int zc = (int) ((double) zSum / ((double) numVertices));
+
+
+
+        int[][] projectedPoints = projection(points, director, projection);
 
         if(direction != 0) {
             // Back-face culling
-            double[] perpendicularVector = Utils.calculatePerpendicularVector(rotated[0], rotated[1], rotated[2], 10, direction);
+            double[] perpendicularVector = Utils.calculatePerpendicularVector(points[0], points[1], points[2], 10, direction);
 
             double[] directionVector = new double[]{
                     director[0],
@@ -343,48 +357,25 @@ public class Draw3d {
                 directionVector = new double[]{0, 0, 1};
             }
 
-            //if (projection.equals("perspective")) {
-                // Calculate the centroid
-                int[] xPoints = rotated[0];
-                int[] yPoints = rotated[1];
-                int[] zPoints = rotated[2];
-
-                int numVertices = xPoints.length;
-
-                int xSum = 0;
-                int ySum = 0;
-                int zSum = 0;
-
-                for (int i = 0; i < numVertices; i++) {
-                    xSum += xPoints[i];
-                    ySum += yPoints[i];
-                    zSum += zPoints[i];
-                }
-
-                int xc = (int) ((double) xSum / ((double) numVertices));
-                int yc = (int) ((double) ySum / ((double) numVertices));
-                int zc = (int) ((double) zSum / ((double) numVertices));
-
+            if (projection.equals("perspective")) {
                 directionVector = new double[]{
                         director[0] - xc,
                         director[1] - yc,
                         director[2] - zc
                 };
+            }
 
-                int[][] vec = new int[][] {
-                        new int[]{xc, (int) (xc + perpendicularVector[0])},
-                        new int[]{yc, (int) (yc + perpendicularVector[1])},
-                        new int[]{zc, (int) (zc + perpendicularVector[2])},
-                };
+            int[][] vec = new int[][] {
+                    new int[]{xc, (int) (xc + perpendicularVector[0])},
+                    new int[]{yc, (int) (yc + perpendicularVector[1])},
+                    new int[]{zc, (int) (zc + perpendicularVector[2])},
+            };
 
-                int[][] proj = projection(
-                        vec,
-                        director,
-                        projection
-                );
-
-
-            //}
+            int[][] proj = projection(
+                    vec,
+                    director,
+                    projection
+            );
 
             double dotProduct = Utils.calculateDotProduct(perpendicularVector, directionVector);
 
@@ -393,8 +384,12 @@ public class Draw3d {
                 if(color != null) Draw.fillPolygon(projectedPoints[0], projectedPoints[1], new int[]{proj[0][0], proj[1][0]}, color, buffer);
                 Draw.drawPolygon(projectedPoints[0], projectedPoints[1], borderColor, buffer);
             }
-            Draw.fillCircle(proj[0][0], proj[1][0], 3, Color.red, buffer);
-            drawLine(proj[0][0], proj[1][0], proj[0][1], proj[1][1], Color.green, buffer);
+
+            if(develop) {
+                Draw.fillCircle(proj[0][0], proj[1][0], 3, Color.red, buffer);
+                drawLine(proj[0][0], proj[1][0], proj[0][1], proj[1][1], Color.green, buffer);
+            }
+
         }
         else {
             if(color != null) Draw.fillPolygon(projectedPoints[0], projectedPoints[1], null, color, buffer);
