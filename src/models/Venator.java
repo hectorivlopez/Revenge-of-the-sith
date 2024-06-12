@@ -37,13 +37,13 @@ public class Venator {
 
     public void draw(int[] director, String projection, BufferedImage buffer, double ang) {
         // -------------------- Top --------------------
-        int[][] topYAxis = new int[][]{new int[]{xc - 430, yc + 17, zc + 15}, new int[]{xc - 430, yc - 17, zc + 15}};
+        int[][] topYAxis = new int[][]{new int[]{xc - 430, yc + 17, zc + 10}, new int[]{xc - 430, yc - 17, zc + 10}};
 
         // ----- Right -----
         int[][] topRight = new int[][]{
                 new int[]{xc - 430, xc - 430, xc - 9, xc + 54, xc + 129, xc + 243, xc + 278, xc + 250,},
-                new int[]{yc + 17, yc + 32, yc + 139, yc + 93, yc + 108, yc + 219, yc + 220, yc + 52,},
-                new int[]{zc + 15, zc + 15, zc + 15, zc + 15, zc + 15, zc + 15, zc + 15, zc + 15,},
+                new int[]{yc + 17, yc + 32, yc + 139, yc + 93, yc + 108, yc + 210, yc + 211, yc + 52,},
+                new int[]{zc + 10, zc + 10, zc + 10, zc + 10, zc + 10, zc + 10, zc + 10, zc + 10,},
         };
 
         int[][] topRightRot1 = rotateAroundLine(topRight[0], topRight[1], topRight[2], topYAxis[0], topYAxis[1], 0.03);
@@ -62,8 +62,8 @@ public class Venator {
         // ----- Left -----
         int[][] topLeft = new int[][]{
                 new int[]{xc - 430, xc - 430, xc - 9, xc + 54, xc + 129, xc + 243, xc + 278, xc + 250,},
-                new int[]{yc - 17, yc - 32, yc - 139, yc - 93, yc - 108, yc - 219, yc - 220, yc - 52,},
-                new int[]{zc + 15, zc + 15, zc + 15, zc + 15, zc + 15, zc + 15, zc + 15, zc + 15,},
+                new int[]{yc - 17, yc - 32, yc - 139, yc - 93, yc - 108, yc - 210, yc - 211, yc - 52,},
+                new int[]{zc + 10, zc + 10, zc + 10, zc + 10, zc + 10, zc + 10, zc + 10, zc + 10,},
         };
 
         int[][] topLeftRot1 = rotateAroundLine(topLeft[0], topLeft[1], topLeft[2], topYAxis[0], topYAxis[1], 0.03);
@@ -80,15 +80,15 @@ public class Venator {
         int[][] scaledTopLeft = scale3D(rotatedTopLeft[0], rotatedTopLeft[1], rotatedTopLeft[2], xc, yc, zc, false, scale, scale, scale);
 
         // ----- Center -----
-        int[][] topYAxisCenter = new int[][]{new int[]{xc - 430, yc + 17, zc + 18}, new int[]{xc - 430, yc - 17, zc + 18}};
+        int[][] topYAxisCenter = new int[][]{new int[]{xc - 430, yc + 17, zc + 13}, new int[]{xc - 430, yc - 17, zc + 13}};
 
         int[][] topRed = new int[][]{
                 new int[]{xc - 430, xc - 10, xc, xc - 10, xc - 430},
                 new int[]{yc + 17, yc + 39, yc + 0, yc - 39, yc - 17},
-                new int[]{zc + 18, zc + 18, zc + 18, zc + 18, zc + 18},
+                new int[]{zc + 13, zc + 13, zc + 13, zc + 13, zc + 13},
         };
 
-        int[][] topRedRot1 = rotateAroundLine(topRed[0], topRed[1], topRed[2], topYAxisCenter[0], topYAxisCenter[1], 0.04);
+        int[][] topRedRot1 = rotateAroundLine(topRed[0], topRed[1], topRed[2], topYAxisCenter[0], topYAxisCenter[1], 0.034);
 
         int[][] rotatedTopRed = rotate(topRedRot1, angles);
         int[][] scaledTopRed = scale3D(rotatedTopRed[0], rotatedTopRed[1], rotatedTopRed[2], xc, yc, zc, false, scale, scale, scale);
@@ -96,7 +96,7 @@ public class Venator {
         int[][] topRedBase = new int[][]{
                 new int[]{xc - 430, xc - 10, xc, xc - 10, xc - 430},
                 new int[]{yc + 17, yc + 39, yc + 0, yc - 39, yc - 17},
-                new int[]{zc + 15, zc + 15, zc + 15, zc + 15, zc + 15},
+                new int[]{zc + 10, zc + 10, zc + 10, zc + 10, zc + 10},
         };
 
         int[][] topRedBaseRot1 = rotateAroundLine(topRedBase[0], topRedBase[1], topRedBase[2], topYAxis[0], topYAxis[1], 0.03);
@@ -135,13 +135,13 @@ public class Venator {
         int[][] scaledTopCenter = scale3D(rotatedTopCenter[0], rotatedTopCenter[1], rotatedTopCenter[2], xc, yc, zc, false, scale, scale, scale);
 
         // -------------------- Bottom --------------------
-        int[][] bottomYAxis = new int[][]{new int[]{xc - 430, yc + 17, zc - 15}, new int[]{xc - 430, yc - 17, zc - 15}};
+        int[][] bottomYAxis = new int[][]{new int[]{xc - 430, yc + 17, zc - 10}, new int[]{xc - 430, yc - 17, zc - 10}};
 
         // ----- Right -----
         int[][] bottomRight = new int[][]{
                 new int[]{xc - 430, xc - 432, xc - 9, xc + 54, xc + 129, xc + 244, xc + 289, xc + 356,},
-                new int[]{yc, yc + 32, yc + 138, yc + 92, yc + 107, yc + 217, yc + 218, yc,},
-                new int[]{zc - 15, zc - 15, zc - 15, zc - 15, zc - 15, zc - 15, zc - 15, zc - 15,},
+                new int[]{yc, yc + 32, yc + 138, yc + 92, yc + 107, yc + 208, yc + 209, yc,},
+                new int[]{zc - 10, zc - 10, zc - 10, zc - 10, zc - 10, zc - 10, zc - 10, zc - 10,},
         };
 
         int[][] bottomRightRot1 = rotateAroundLine(bottomRight[0], bottomRight[1], bottomRight[2], bottomYAxis[0], bottomYAxis[1], -0.03);
@@ -160,8 +160,8 @@ public class Venator {
         // ----- Left -----
         int[][] bottomLeft = new int[][]{
                 new int[]{xc - 430, xc - 432, xc - 9, xc + 54, xc + 129, xc + 244, xc + 289, xc + 356,},
-                new int[]{yc, yc - 32, yc - 138, yc - 92, yc - 107, yc - 217, yc - 218, yc,},
-                new int[]{zc - 15, zc - 15, zc - 15, zc - 15, zc - 15, zc - 15, zc - 15, zc - 15,},
+                new int[]{yc, yc - 32, yc - 138, yc - 92, yc - 107, yc - 208, yc - 209, yc,},
+                new int[]{zc - 10, zc - 10, zc - 10, zc - 10, zc - 10, zc - 10, zc - 10, zc - 10,},
         };
 
         int[][] bottomLeftRot1 = rotateAroundLine(bottomLeft[0], bottomLeft[1], bottomLeft[2], bottomYAxis[0], bottomYAxis[1], -0.03);
@@ -282,50 +282,52 @@ public class Venator {
             System.out.println("");
         }*/
 
-        surface(topRedRight, director, projection, 1, false, Color.white, Color.red, buffer);
-        surface(topRedLeft, director, projection, 1, false, Color.white, Color.red, buffer);
-        surface(topRedFront, director, projection, 1, false, Color.white, Color.red, buffer);
+        surface(topRedRight, director, projection, 1, false, new Color(120, 80, 80), new Color(116, 53, 60), buffer);
+        surface(topRedLeft, director, projection, 1, false, new Color(120, 80, 80), new Color(116, 53, 60), buffer);
+        surface(topRedFront, director, projection, 1, false, new Color(120, 80, 80), new Color(116, 53, 60), buffer);
 
         if(angles[2] > Math.PI && angles[2] < 2 * Math.PI) {
-            surface(left5, director, projection, -1, false, Color.white, new Color(0, 0, 0 ), buffer);
-            surface(left4, director, projection, -1, false, Color.white, new Color(1, 0, 0 ), buffer);
-            surface(left3, director, projection, -1, false, Color.white, new Color(0, 1, 0 ), buffer);
-            surface(left2, director, projection, -1, false, Color.white, new Color(0, 0, 1 ), buffer);
-            surface(left1, director, projection, -1, false, Color.white, new Color(1, 1, 0 ), buffer);
+            surface(left5, director, projection, -1, false, Color.gray, new Color(100, 100, 100 ), buffer);
+            surface(left4, director, projection, -1, false, Color.gray, new Color(101, 100, 100 ), buffer);
+            surface(left3, director, projection, -1, false, Color.gray, new Color(100, 101, 100 ), buffer);
+            surface(left2, director, projection, -1, false, Color.gray, new Color(100, 100, 101 ), buffer);
+            surface(left1, director, projection, -1, false, Color.gray, new Color(101, 101, 100 ), buffer);
 
-            surface(right5, director, projection, 1, false, Color.white, new Color(0, 0, 0 ), buffer);
-            surface(right4, director, projection, 1, false, Color.white, new Color(1, 0, 0 ), buffer);
-            surface(right3, director, projection, 1, false, Color.white, new Color(0, 1, 0 ), buffer);
-            surface(right2, director, projection, 1, false, Color.white, new Color(0, 0, 1 ), buffer);
-            surface(right1, director, projection, 1, false, Color.white, new Color(1, 1, 0 ), buffer);
+            surface(right5, director, projection, 1, false, Color.gray, new Color(100, 100, 100 ), buffer);
+            surface(right4, director, projection, 1, false, Color.gray, new Color(101, 100, 100 ), buffer);
+            surface(right3, director, projection, 1, false, Color.gray, new Color(100, 101, 100 ), buffer);
+            surface(right2, director, projection, 1, false, Color.gray, new Color(100, 100, 101 ), buffer);
+            surface(right1, director, projection, 1, false, Color.gray, new Color(101, 101, 100 ), buffer);
+
+            surface(front, director, projection, 1, false, Color.gray, new Color(101, 101, 101 ), buffer);
         }
         else {
-            surface(left1, director, projection, -1, false, Color.white, new Color(0, 0, 0 ), buffer);
-            surface(left2, director, projection, -1, false, Color.white, new Color(1, 0, 0 ), buffer);
-            surface(left3, director, projection, -1, false, Color.white, new Color(0, 1, 0 ), buffer);
-            surface(left4, director, projection, -1, false, Color.white, new Color(0, 0, 1 ), buffer);
-            surface(left5, director, projection, -1, false, Color.white, new Color(1, 1, 0 ), buffer);
+            surface(front, director, projection, 1, false, Color.gray, new Color(101, 101, 101 ), buffer);
 
-            surface(right1, director, projection, 1, false, Color.white, new Color(0, 0, 0 ), buffer);
-            surface(right2, director, projection, 1, false, Color.white, new Color(1, 0, 0 ), buffer);
-            surface(right3, director, projection, 1, false, Color.white, new Color(0, 1, 0 ), buffer);
-            surface(right4, director, projection, 1, false, Color.white, new Color(0, 0, 1 ), buffer);
-            surface(right5, director, projection, 1, false, Color.white, new Color(1, 1, 0 ), buffer);
+            surface(left1, director, projection, -1, false, Color.gray, new Color(100, 100, 100 ), buffer);
+            surface(left2, director, projection, -1, false, Color.gray, new Color(101, 100, 100 ), buffer);
+            surface(left3, director, projection, -1, false, Color.gray, new Color(100, 101, 100 ), buffer);
+            surface(left4, director, projection, -1, false, Color.gray, new Color(100, 100, 101 ), buffer);
+            surface(left5, director, projection, -1, false, Color.gray, new Color(101, 101, 100 ), buffer);
+
+            surface(right1, director, projection, 1, false, Color.gray, new Color(100, 100, 100 ), buffer);
+            surface(right2, director, projection, 1, false, Color.gray, new Color(101, 100, 100 ), buffer);
+            surface(right3, director, projection, 1, false, Color.gray, new Color(100, 101, 100 ), buffer);
+            surface(right4, director, projection, 1, false, Color.gray, new Color(100, 100, 101 ), buffer);
+            surface(right5, director, projection, 1, false, Color.gray, new Color(101, 101, 100 ), buffer);
         }
 
-        surface(front, director, projection, 1, false, Color.white, Color.black, buffer);
+        surface(scaledTopLeft, director, projection, 1, false, Color.gray, new Color(180, 180, 180), buffer);
+        surface(scaledTopRight, director, projection, -1, false, Color.gray, new Color(180, 180, 180), buffer);
+        //surface(scaledTopRight2 director, projection, -1, false, Color.gray, Color.blue, buffer);
 
-        surface(scaledTopLeft, director, projection, 1, false, Color.white, Color.gray, buffer);
-        surface(scaledTopRight, director, projection, -1, false, Color.white, Color.gray, buffer);
-        //surface(scaledTopRight2 director, projection, -1, false, Color.white, Color.blue, buffer);
+        //prism(scaledTopCenter, 4, director, 1, null, projection, -1, Color.gray, buffer);
+        //prism(scaledTopRed, 4, director, 1, null, projection, -1, new Color(143, 67, 76, buffer);
 
-        //prism(scaledTopCenter, 4, director, 1, null, projection, -1, Color.white, buffer);
-        //prism(scaledTopRed, 4, director, 1, null, projection, -1, Color.red, buffer);
+        surface(scaledTopRed, director, projection, -1, false, new Color(120, 80, 80), new Color(143, 67, 76), buffer);
 
-        surface(scaledTopRed, director, projection, -1, false, Color.white, Color.red, buffer);
-
-        surface(scaledBottomLeft, director, projection, -1, false, Color.white, Color.gray, buffer);
-        surface(scaledBottomRight, director, projection, 1, false, Color.white, Color.gray, buffer);
+        surface(scaledBottomLeft, director, projection, -1, false, Color.gray, new Color(180, 180, 180), buffer);
+        surface(scaledBottomRight, director, projection, 1, false, Color.gray, new Color(180, 180, 180), buffer);
 
         //drawAxis(director, projection, buffer);
     }
