@@ -8,11 +8,14 @@ import static graphics.Transformations.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 public class Venator {
     public int xc;
     public int yc;
     public int zc;
+
+    public int[] center;
 
     public int x0;
     public int y0;
@@ -158,6 +161,7 @@ public class Venator {
         this.xc = xc;
         this.yc = yc;
         this.zc = zc;
+        this.center = new int[]{xc, yc, zc};
 
         this.x0 = xc + 500;
         this.y0 = yc + 500;
@@ -190,19 +194,18 @@ public class Venator {
             System.out.println("");
         }*/
 
-        /*surface(topRedRight, director, projection, 1, false, null, new Color(120, 80, 80), new Color(116, 53, 60), buffer);
+        surface(topRedRight, director, projection, 1, false, null, new Color(120, 80, 80), new Color(116, 53, 60), buffer);
         surface(topRedLeft, director, projection, 1, false, null, new Color(120, 80, 80), new Color(116, 53, 60), buffer);
         surface(topRedFront, director, projection, 1, false, null, new Color(120, 80, 80), new Color(116, 53, 60), buffer);
-*/
         //drawSides(director, projection, buffer);
 
         drawTopSides(director, projection, false, buffer);
 
         drawTopCenter(director, projection, false, buffer);
 
-        /*drawBridge(director, projection, true, buffer);
+        drawBridge(director, projection, true, buffer);
 
-        drawBottom(director, projection, true, buffer);*/
+        drawBottom(director, projection, true, buffer);
 
         //drawAxis(director, projection, buffer);
     }
@@ -273,11 +276,7 @@ public class Venator {
                 new int[]{topLeftRot1[0][topLeftRot1[0].length - 1], topLeftRot1[1][topLeftRot1[0].length - 1], topLeftRot1[2][topLeftRot1[0].length - 1]}
         };
 
-        int[][] topLeftRot2 = rotateAroundLine(topLeftRot1[0], topLeftRot1[1], topLeftRot1[2], topXLeftAxis[0], topXLeftAxis[1], xTopInclination);
-
-        // Transformations
-        int[][] rotatedTopLeft = rotate(topLeftRot2, angles);
-        scaledTopLeft = scale3D(rotatedTopLeft[0], rotatedTopLeft[1], rotatedTopLeft[2], xc, yc, zc, false, scale, scale, scale);
+        scaledTopLeft = transform(topLeftRot1, center, scale, angles, new double[]{xTopInclination}, new int[][][]{topXLeftAxis});
 
         // Faces to paint
         topLeft1 = new int[][]{
@@ -285,26 +284,14 @@ public class Venator {
                 new int[]{yc - 17, yc - 32, yc - 139, yc - 93, yc - 42},
                 new int[]{zc + height, zc + height, zc + height, zc + height, zc + height},
         };
-
-        int[][] topLeft1Rot1 = rotateAroundLine(topLeft1[0], topLeft1[1], topLeft1[2], topYAxis[0], topYAxis[1], yInclination);
-        int[][] topLeft1Rot2 = rotateAroundLine(topLeft1Rot1[0], topLeft1Rot1[1], topLeft1Rot1[2], topXLeftAxis[0], topXLeftAxis[1], xTopInclination);
-
-        // Transformations
-        int[][] rotatedTopLeft1 = rotate(topLeft1Rot2, angles);
-        scaledTopLeft1 = scale3D(rotatedTopLeft1[0], rotatedTopLeft1[1], rotatedTopLeft1[2], xc, yc, zc, false, scale, scale, scale);
+        scaledTopLeft1 = transform(topLeft1, center, scale, angles, new double[]{yInclination, xTopInclination}, new int[][][]{topYAxis, topXLeftAxis});
 
         topLeft2 = new int[][]{
                 new int[]{xc + 54, xc + 129, xc + 243, xc + 278, xc + 250, xc + 54},
                 new int[]{yc - 93, yc - 108, yc - 210, yc - 211, yc - 52, yc - 42},
                 new int[]{zc + height, zc + height, zc + height, zc + height, zc + height, zc + height},
         };
-
-        int[][] topLeft2Rot1 = rotateAroundLine(topLeft2[0], topLeft2[1], topLeft2[2], topYAxis[0], topYAxis[1], yInclination);
-        int[][] topLeft2Rot2 = rotateAroundLine(topLeft2Rot1[0], topLeft2Rot1[1], topLeft2Rot1[2], topXLeftAxis[0], topXLeftAxis[1], xTopInclination);
-
-        // Transformations
-        int[][] rotatedTopLeft2 = rotate(topLeft2Rot2, angles);
-        scaledTopLeft2 = scale3D(rotatedTopLeft2[0], rotatedTopLeft2[1], rotatedTopLeft2[2], xc, yc, zc, false, scale, scale, scale);
+        scaledTopLeft2 = transform(topLeft2, center, scale, angles, new double[]{yInclination, xTopInclination}, new int[][][]{topYAxis, topXLeftAxis});
 
         // ----- Right -----
         topRight = new int[][]{
@@ -320,11 +307,7 @@ public class Venator {
                 new int[]{topRightRot1[0][topRightRot1[0].length - 1], topRightRot1[1][topRightRot1[0].length - 1], topRightRot1[2][topRightRot1[0].length - 1]}
         };
 
-        int[][] topRightRot2 = rotateAroundLine(topRightRot1[0], topRightRot1[1], topRightRot1[2], topXRightAxis[0], topXRightAxis[1], -xTopInclination);
-
-        // Transformations
-        int[][] rotatedTopRight = rotate(topRightRot2, angles);
-        scaledTopRight = scale3D(rotatedTopRight[0], rotatedTopRight[1], rotatedTopRight[2], xc, yc, zc, false, scale, scale, scale);
+        scaledTopRight = transform(topRightRot1, center, scale, angles, new double[]{-xTopInclination}, new int[][][]{topXRightAxis});
 
         // Faces to paint
         topRight1 = new int[][]{
@@ -332,27 +315,14 @@ public class Venator {
                 new int[]{yc + 17, yc + 32, yc + 139, yc + 93, yc + 42},
                 new int[]{zc + height, zc + height, zc + height, zc + height, zc + height},
         };
-
-        int[][] topRight1Rot1 = rotateAroundLine(topRight1[0], topRight1[1], topRight1[2], topYAxis[0], topYAxis[1], yInclination);
-        int[][] topRight1Rot2 = rotateAroundLine(topRight1Rot1[0], topRight1Rot1[1], topRight1Rot1[2], topXRightAxis[0], topXRightAxis[1], -xTopInclination);
-
-        // Transformations
-        int[][] rotatedTopRight1 = rotate(topRight1Rot2, angles);
-        scaledTopRight1 = scale3D(rotatedTopRight1[0], rotatedTopRight1[1], rotatedTopRight1[2], xc, yc, zc, false, scale, scale, scale);
+        scaledTopRight1 = transform(topRight1, center, scale, angles, new double[]{yInclination, -xTopInclination}, new int[][][]{topYAxis, topXRightAxis});
 
         topRight2 = new int[][]{
                 new int[]{xc + 54, xc + 129, xc + 243, xc + 278, xc + 250, xc + 54},
                 new int[]{yc + 93, yc + 108, yc + 210, yc + 211, yc + 52, yc + 42},
                 new int[]{zc + height, zc + height, zc + height, zc + height, zc + height, zc + height},
         };
-
-        int[][] topRight2Rot1 = rotateAroundLine(topRight2[0], topRight2[1], topRight2[2], topYAxis[0], topYAxis[1], yInclination);
-        int[][] topRight2Rot2 = rotateAroundLine(topRight2Rot1[0], topRight2Rot1[1], topRight2Rot1[2], topXRightAxis[0], topXRightAxis[1], -xTopInclination);
-
-        // Transformations
-        int[][] rotatedTopRight2 = rotate(topRight2Rot2, angles);
-        scaledTopRight2 = scale3D(rotatedTopRight2[0], rotatedTopRight2[1], rotatedTopRight2[2], xc, yc, zc, false, scale, scale, scale);
-
+        scaledTopRight2 = transform(topRight2, center, scale, angles, new double[]{yInclination, -xTopInclination}, new int[][][]{topYAxis, topXRightAxis});
 
     }
 
@@ -360,27 +330,19 @@ public class Venator {
         topYElevatedAxis = new int[][]{new int[]{xc - 430, yc + 17, zc + height + 3}, new int[]{xc - 430, yc - 17, zc + height + 3}};
 
         // ----- Red -----
-        topRed = new int[][]{
-                new int[]{xc - 430, xc - 10, xc, xc - 10, xc - 430},
-                new int[]{yc + 17, yc + 39, yc + 0, yc - 39, yc - 17},
-                new int[]{zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3},
-        };
-
-        int[][] topRedRot1 = rotateAroundLine(topRed[0], topRed[1], topRed[2], topYElevatedAxis[0], topYElevatedAxis[1], yInclination + 0.004);
-
-        int[][] rotatedTopRed = rotate(topRedRot1, angles);
-        scaledTopRed = scale3D(rotatedTopRed[0], rotatedTopRed[1], rotatedTopRed[2], xc, yc, zc, false, scale, scale, scale);
-
         topRedBase = new int[][]{
                 new int[]{xc - 430, xc - 10, xc, xc - 10, xc - 430},
                 new int[]{yc + 17, yc + 39, yc + 0, yc - 39, yc - 17},
                 new int[]{zc + height, zc + height, zc + height, zc + height, zc + height},
         };
+        scaledTopRedBase = transform(topRedBase, center, scale, angles, new double[]{yInclination}, new int[][][]{topYAxis});
 
-        int[][] topRedBaseRot1 = rotateAroundLine(topRedBase[0], topRedBase[1], topRedBase[2], topYAxis[0], topYAxis[1], yInclination);
-
-        int[][] rotatedTopRedBase = rotate(topRedBaseRot1, angles);
-        scaledTopRedBase = scale3D(rotatedTopRedBase[0], rotatedTopRedBase[1], rotatedTopRedBase[2], xc, yc, zc, false, scale, scale, scale);
+        topRed = new int[][]{
+                new int[]{xc - 430, xc - 10, xc, xc - 10, xc - 430},
+                new int[]{yc + 17, yc + 39, yc + 0, yc - 39, yc - 17},
+                new int[]{zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3},
+        };
+        scaledTopRed = transform(topRed, center, scale, angles, new double[]{yInclination + 0.004}, new int[][][]{topYElevatedAxis});
 
         topRedLeft = new int[][]{
                 new int[]{scaledTopRed[0][3], scaledTopRed[0][4], scaledTopRedBase[0][4], scaledTopRedBase[0][3]},
@@ -406,24 +368,16 @@ public class Venator {
                 new int[]{yc + 39, yc + 45, yc + 25, yc + 25, yc + 12, yc + 12, yc - 12, yc - 12, yc - 25, yc - 25, yc - 45, yc - 39, yc - 0},
                 new int[]{zc + height, zc + height, zc + height, zc + height, zc + height, zc + height, zc + height, zc + height, zc + height, zc + height, zc + height, zc + height, zc + height,},
         };
-
-        int[][] topCenterBaseRot1 = rotateAroundLine(topCenterBase[0], topCenterBase[1], topCenterBase[2], topYAxis[0], topYAxis[1], yInclination);
-
-        int[][] rotatedTopCenterBase = rotate(topCenterBaseRot1, angles);
-        scaledTopCenterBase = scale3D(rotatedTopCenterBase[0], rotatedTopCenterBase[1], rotatedTopCenterBase[2], xc, yc, zc, false, scale, scale, scale);
+        scaledTopCenterBase = transform(topCenterBase, center, scale, angles, new double[]{yInclination}, new int[][][]{topYAxis});
 
         topCenter = new int[][]{
                 new int[]{xc - 10, xc + 115, xc + 115, xc + 75, xc + 75, xc + 35, xc + 35, xc + 75, xc + 75, xc + 115, xc + 115, xc - 10, xc},
                 new int[]{yc + 39, yc + 45, yc + 25, yc + 25, yc + 12, yc + 12, yc - 12, yc - 12, yc - 25, yc - 25, yc - 45, yc - 39, yc - 0},
                 new int[]{zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3,},
         };
+        scaledTopCenter = transform(topCenter, center, scale, angles, new double[]{yInclination + 0.004}, new int[][][]{topYElevatedAxis});
 
-        int[][] topCenterRot1 = rotateAroundLine(topCenter[0], topCenter[1], topCenter[2], topYElevatedAxis[0], topYElevatedAxis[1], yInclination + 0.004);
-
-        int[][] rotatedTopCenter = rotate(topCenterRot1, angles);
-        scaledTopCenter = scale3D(rotatedTopCenter[0], rotatedTopCenter[1], rotatedTopCenter[2], xc, yc, zc, false, scale, scale, scale);
-
-        topCenterLeft1 = new int[][]{
+        /*topCenterLeft1 = new int[][]{
                 new int[]{xc - 10, xc + 75, xc + 75, xc + 35, xc + 35, xc},
                 new int[]{yc - 39, yc - 43, yc - 12, yc - 12, yc, yc},
                 new int[]{zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3,},
@@ -467,17 +421,43 @@ public class Venator {
 
         int[][] rotatedTopCenterRight2 = rotate(topCenterRight2Rot1, angles);
         scaledTopCenterRight2 = scale3D(rotatedTopCenterRight2[0], rotatedTopCenterRight2[1], rotatedTopCenterRight2[2], xc, yc, zc, false, scale, scale, scale);
+*/
+
+
+        topCenterLeft1 = new int[][]{
+                new int[]{xc - 10, xc + 75, xc + 75, xc + 35, xc + 35, xc},
+                new int[]{yc - 39, yc - 43, yc - 12, yc - 12, yc, yc},
+                new int[]{zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3,},
+        };
+        scaledTopCenterLeft1 = transform(topCenterLeft1, center, scale, angles, new double[]{yInclination + 0.004}, new int[][][]{topYElevatedAxis});
+
+        topCenterLeft2 = new int[][]{
+                new int[]{xc + 75, xc + 115, xc + 115, xc + 75,},
+                new int[]{yc - 43, yc - 45, yc - 25, yc - 25},
+                new int[]{zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3,},
+        };
+        scaledTopCenterLeft2 = transform(topCenterLeft2, center, scale, angles, new double[]{yInclination + 0.004}, new int[][][]{topYElevatedAxis});
+
+        topCenterRight1 = new int[][]{
+                new int[]{xc - 10, xc + 75, xc + 75, xc + 35, xc + 35, xc},
+                new int[]{yc + 39, yc + 43, yc + 12, yc + 12, yc, yc},
+                new int[]{zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3,},
+        };
+        scaledTopCenterRight1 = transform(topCenterRight1, center, scale, angles, new double[]{yInclination + 0.004}, new int[][][]{topYElevatedAxis});
+
+        topCenterRight2 = new int[][]{
+                new int[]{xc + 75, xc + 115, xc + 115, xc + 75,},
+                new int[]{yc + 43, yc + 45, yc + 25, yc + 25},
+                new int[]{zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3,},
+        };
+        scaledTopCenterRight2 = transform(topCenterRight2, center, scale, angles, new double[]{yInclination + 0.004}, new int[][][]{topYElevatedAxis});
 
         bridgeBase = new int[][]{
                 new int[]{xc + 75, xc + 115, xc + 115, xc + 75,},
                 new int[]{yc + 43, yc + 45, yc + 25, yc + 25},
                 new int[]{zc + height + 3, zc + height + 3, zc + height + 3, zc + height + 3,},
         };
-
-        int[][] bridgeBaseRot1 = rotateAroundLine(bridgeBase[0], bridgeBase[1], bridgeBase[2], topYElevatedAxis[0], topYElevatedAxis[1], yInclination + 0.004);
-
-        int[][] rotatedBridgeBase = rotate(bridgeBaseRot1, angles);
-        scaledBridgeBase = scale3D(rotatedBridgeBase[0], rotatedBridgeBase[1], rotatedBridgeBase[2], xc, yc, zc, false, scale, scale, scale);
+        scaledBridgeBase = transform(bridgeBase, center, scale, angles, new double[]{yInclination + 0.004}, new int[][][]{topYElevatedAxis});
 
     }
 
@@ -487,9 +467,7 @@ public class Venator {
                 new int[]{yc + 12, yc + 12, yc - 12, yc - 12},
                 new int[]{zc + 85, zc + 100, zc + 100, zc + 85},
         };
-
-        int[][] rotatedBridgeTopCenter2 = rotate(bridgeTopCenter2, angles);
-        scaledBridgeTopCenter2 = scale3D(rotatedBridgeTopCenter2[0], rotatedBridgeTopCenter2[1], rotatedBridgeTopCenter2[2], xc, yc, zc, false, scale, scale, scale);
+        scaledBridgeTopCenter2 = transform(bridgeTopCenter2, center, scale, angles, null, null);
 
         bridgeTopCenter1 = new int[][]{
                 new int[]{scaledTopCenterLeft1[0][3], scaledBridgeTopCenter2[0][3], scaledBridgeTopCenter2[0][0], scaledTopCenterRight1[0][3]},
@@ -502,18 +480,14 @@ public class Venator {
                 new int[]{yc - 12, yc - 12, yc - 30, yc - 30},
                 new int[]{zc + 90, zc + 90, zc + 90, zc + 90},
         };
-
-        int[][] rotatedBridgeTowerBaseLeft = rotate(bridgeTowerBaseLeft, angles);
-        scaledBridgeTowerBaseLeft = scale3D(rotatedBridgeTowerBaseLeft[0], rotatedBridgeTowerBaseLeft[1], rotatedBridgeTowerBaseLeft[2], xc, yc, zc, false, scale, scale, scale);
+        scaledBridgeTowerBaseLeft = transform(bridgeTowerBaseLeft, center, scale, angles, null, null);
 
         bridgeTowerBaseRight = new int[][]{
                 new int[]{xc + 170, xc + 245, xc + 245, xc + 170},
                 new int[]{yc + 12, yc + 12, yc + 30, yc + 30},
                 new int[]{zc + 90, zc + 90, zc + 90, zc + 90},
         };
-
-        int[][] rotatedBridgeTowerBaseRight = rotate(bridgeTowerBaseRight, angles);
-        scaledBridgeTowerBaseRight = scale3D(rotatedBridgeTowerBaseRight[0], rotatedBridgeTowerBaseRight[1], rotatedBridgeTowerBaseRight[2], xc, yc, zc, false, scale, scale, scale);
+        scaledBridgeTowerBaseRight = transform(bridgeTowerBaseRight, center, scale, angles, null, null);
 
 
         int[][] bridgeTowersBaseFrontMid = new int[][]{
@@ -521,9 +495,7 @@ public class Venator {
                 new int[]{yc - 18, yc + 18, 1, 1},
                 new int[]{zc + 90, zc + 90, 1, 1},
         };
-
-        int[][] rotatedBridgeTowersBaseFrontMid = rotate(bridgeTowersBaseFrontMid, angles);
-        int[][] scaledBridgeTowersBaseFrontMid = scale3D(rotatedBridgeTowersBaseFrontMid[0], rotatedBridgeTowersBaseFrontMid[1], rotatedBridgeTowersBaseFrontMid[2], xc, yc, zc, false, scale, scale, scale);
+        int[][] scaledBridgeTowersBaseFrontMid = transform(bridgeTowersBaseFrontMid, center, scale, angles, null, null);
 
         bridgeTopLeft1 = new int[][]{
                 new int[]{scaledTopCenterLeft2[0][3], scaledBridgeTowersBaseFrontMid[0][0], scaledBridgeTowerBaseLeft[0][0], scaledTopCenterLeft1[0][2]},
@@ -591,12 +563,7 @@ public class Venator {
                 new int[]{bottomLeftRot1[0][0], bottomLeftRot1[1][0], bottomLeftRot1[2][0]},
                 new int[]{bottomLeftRot1[0][7], bottomLeftRot1[1][7], bottomLeftRot1[2][7]},
         };
-
-        int[][] bottomLeftRot2 = rotateAroundLine(bottomLeftRot1[0], bottomLeftRot1[1], bottomLeftRot1[2], bottomXAxis[0], bottomXAxis[1], -xBottomInclination);
-
-        // Transformations
-        int[][] rotatedBottomLeft = rotate(bottomLeftRot2, angles);
-        scaledBottomLeft = scale3D(rotatedBottomLeft[0], rotatedBottomLeft[1], rotatedBottomLeft[2], xc, yc, zc, false, scale, scale, scale);
+        scaledBottomLeft = transform(bottomLeftRot1, center, scale, angles, new double[]{-xBottomInclination}, new int[][][]{bottomXAxis});
 
         // ----- Right -----
         bottomRight = new int[][]{
@@ -604,13 +571,7 @@ public class Venator {
                 new int[]{yc, yc + 32, yc + 138, yc + 92, yc + 107, yc + 208, yc + 209, yc,},
                 new int[]{zc - height, zc - height, zc - height, zc - height, zc - height, zc - height, zc - height, zc - height,},
         };
-
-        int[][] bottomRightRot1 = rotateAroundLine(bottomRight[0], bottomRight[1], bottomRight[2], bottomYAxis[0], bottomYAxis[1], -yInclination);
-        int[][] bottomRightRot2 = rotateAroundLine(bottomRightRot1[0], bottomRightRot1[1], bottomRightRot1[2], bottomXAxis[0], bottomXAxis[1], xBottomInclination);
-
-        // Transformations
-        int[][] rotatedBottomRight = rotate(bottomRightRot2, angles);
-        scaledBottomRight = scale3D(rotatedBottomRight[0], rotatedBottomRight[1], rotatedBottomRight[2], xc, yc, zc, false, scale, scale, scale);
+        scaledBottomRight = transform(bottomRight, center, scale, angles, new double[]{-yInclination, xBottomInclination}, new int[][][]{bottomYAxis, bottomXAxis});
 
         // ----- Center -----
         bottomRedLeft = new int[][]{
@@ -618,26 +579,14 @@ public class Venator {
                 new int[]{yc, yc - 10, yc - 10, yc - 17, yc - 17, yc - 10, yc - 10, yc - 17, yc - 17, yc - 10, yc - 10, yc},
                 new int[]{zc - height, zc - height, zc - height, zc - height, zc - height, zc - height, zc - height, zc - height, zc - height, zc - height, zc - height, zc - height},
         };
-
-        int[][] bottomRedLeftRot1 = rotateAroundLine(bottomRedLeft[0], bottomRedLeft[1], bottomRedLeft[2], bottomYAxis[0], bottomYAxis[1], -yInclination);
-        int[][] bottomRedLeftRot2 = rotateAroundLine(bottomRedLeftRot1[0], bottomRedLeftRot1[1], bottomRedLeftRot1[2], bottomXAxis[0], bottomXAxis[1], -xBottomInclination);
-
-        // Transformations
-        int[][] rotatedBottomRedLeft = rotate(bottomRedLeftRot2, angles);
-        scaledBottomRedLeft = scale3D(rotatedBottomRedLeft[0], rotatedBottomRedLeft[1], rotatedBottomRedLeft[2], xc, yc, zc, false, scale, scale, scale);
+        scaledBottomRedLeft = transform(bottomRedLeft, center, scale, angles, new double[]{-yInclination, -xBottomInclination}, new int[][][]{bottomYAxis, bottomXAxis});
 
         bottomRedRight = new int[][]{
                 new int[]{xc - 430, xc - 431, xc - 310, xc - 300, xc - 270, xc - 260, xc - 160, xc - 150, xc - 90, xc - 80, xc + 353, xc + 356},
                 new int[]{yc, yc + 10, yc + 10, yc + 17, yc + 17, yc + 10, yc + 10, yc + 17, yc + 17, yc + 10, yc + 10, yc},
                 new int[]{zc - height, zc - height, zc - height, zc - height, zc - height, zc - height, zc - height, zc - height, zc - height, zc - height, zc - height, zc - height},
         };
-
-        int[][] bottomRedRightRot1 = rotateAroundLine(bottomRedRight[0], bottomRedRight[1], bottomRedRight[2], bottomYAxis[0], bottomYAxis[1], -yInclination);
-        int[][] bottomRedRightRot2 = rotateAroundLine(bottomRedRightRot1[0], bottomRedRightRot1[1], bottomRedRightRot1[2], bottomXAxis[0], bottomXAxis[1], xBottomInclination);
-
-        // Transformations
-        int[][] rotatedBottomRedRight = rotate(bottomRedRightRot2, angles);
-        scaledBottomRedRight = scale3D(rotatedBottomRedRight[0], rotatedBottomRedRight[1], rotatedBottomRedRight[2], xc, yc, zc, false, scale, scale, scale);
+        scaledBottomRedRight = transform(bottomRedRight, center, scale, angles, new double[]{-yInclination, xBottomInclination}, new int[][][]{bottomYAxis, bottomXAxis});
 
         // ----- Hangar -----
         bottomHangarLeft = new int[][]{
@@ -645,26 +594,14 @@ public class Venator {
                 new int[]{yc, yc - 25, yc - 25, yc},
                 new int[]{zc - height, zc - height, zc - height, zc - height,},
         };
-
-        int[][] bottomHangarLeftRot1 = rotateAroundLine(bottomHangarLeft[0], bottomHangarLeft[1], bottomHangarLeft[2], bottomYAxis[0], bottomYAxis[1], -yInclination);
-        int[][] bottomHangarLeftRot2 = rotateAroundLine(bottomHangarLeftRot1[0], bottomHangarLeftRot1[1], bottomHangarLeftRot1[2], bottomXAxis[0], bottomXAxis[1], -xBottomInclination);
-
-        // Transformations
-        int[][] rotatedBottomHangarLeft = rotate(bottomHangarLeftRot2, angles);
-        scaledBottomHangarLeft = scale3D(rotatedBottomHangarLeft[0], rotatedBottomHangarLeft[1], rotatedBottomHangarLeft[2], xc, yc, zc, false, scale, scale, scale);
+        scaledBottomHangarLeft = transform(bottomHangarLeft, center, scale, angles, new double[]{-yInclination, -xBottomInclination}, new int[][][]{bottomYAxis, bottomXAxis});
 
         bottomHangarRight = new int[][]{
                 new int[]{xc - 9, xc - 8, xc + 81, xc + 81},
                 new int[]{yc, yc + 25, yc + 25, yc},
                 new int[]{zc - height, zc - height, zc - height, zc - height,},
         };
-
-        int[][] bottomHangarRightRot1 = rotateAroundLine(bottomHangarRight[0], bottomHangarRight[1], bottomHangarRight[2], bottomYAxis[0], bottomYAxis[1], -yInclination);
-        int[][] bottomHangarRightRot2 = rotateAroundLine(bottomHangarRightRot1[0], bottomHangarRightRot1[1], bottomHangarRightRot1[2], bottomXAxis[0], bottomXAxis[1], xBottomInclination);
-
-        // Transformations
-        int[][] rotatedBottomHangarRight = rotate(bottomHangarRightRot2, angles);
-        scaledBottomHangarRight = scale3D(rotatedBottomHangarRight[0], rotatedBottomHangarRight[1], rotatedBottomHangarRight[2], xc, yc, zc, false, scale, scale, scale);
+        scaledBottomHangarRight = transform(bottomHangarRight, center, scale, angles, new double[]{-yInclination, xBottomInclination}, new int[][][]{bottomYAxis, bottomXAxis});
     }
 
     private void calSides() {
@@ -834,5 +771,26 @@ public class Venator {
             surface(right4, director, projection, 1, false, null, Color.gray, fill ? new Color(100, 100, 101) : null, buffer);
             surface(right5, director, projection, 1, false, null, Color.gray, fill ? new Color(101, 101, 100) : null, buffer);
         }
+    }
+
+
+    // Utils
+    public int[][] transform(int[][] points, int[] center, double scale, double[] angles, double[] anglesAx, int[][][] axis) {
+        int[][] pointsRot = new int[points.length][points[0].length];
+
+        for(int i = 0; i < points.length; i++) {
+            pointsRot[i] = Arrays.copyOf(points[i], points[i].length);
+        }
+
+        if(anglesAx != null) {
+            for (int i = 0; i < anglesAx.length; i++) {
+                pointsRot = rotateAroundLine(pointsRot[0], pointsRot[1], pointsRot[2], axis[i][0], axis[i][1], anglesAx[i]);
+            }
+        }
+
+        int[][] rotatedPoints = rotate(pointsRot, angles);
+        int[][] scaledPoints = scale3D(rotatedPoints[0], rotatedPoints[1], rotatedPoints[2], center[0], center[1], center[2], false, scale, scale, scale);
+
+        return scaledPoints;
     }
 }
