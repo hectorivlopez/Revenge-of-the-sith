@@ -317,7 +317,7 @@ public class Draw3d {
         }
     }
 
-    public static void surface(int[][] points, int[] director, String projection, double direction, boolean develop, Color borderColor, Color color, BufferedImage buffer) {
+    public static void surface(int[][] points, int[] director, String projection, double direction, boolean develop, int[] fillCenter, Color borderColor, Color color, BufferedImage buffer) {
         // Calculate the centroid
         int[] xPoints = points[0];
         int[] yPoints = points[1];
@@ -381,7 +381,19 @@ public class Draw3d {
 
             // Drawing
             if (dotProduct > 0) {
-                if(color != null) Draw.fillPolygon(projectedPoints[0], projectedPoints[1], new int[]{proj[0][0], proj[1][0]}, color, buffer);
+                if(fillCenter != null) {
+                    int[][] fillVec = new int[][] {
+                            new int[]{fillCenter[0]},
+                            new int[]{fillCenter[1]},
+                            new int[]{fillCenter[2]},
+                    };
+
+                    if(color != null) Draw.fillPolygon(projectedPoints[0], projectedPoints[1], new int[]{fillVec[0][0], fillVec[1][0]}, color, buffer);
+
+                }
+                else {
+                    if(color != null) Draw.fillPolygon(projectedPoints[0], projectedPoints[1], new int[]{proj[0][0], proj[1][0]}, color, buffer);
+                }
                 Draw.drawPolygon(projectedPoints[0], projectedPoints[1], borderColor, buffer);
             }
 

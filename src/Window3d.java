@@ -170,10 +170,10 @@ public class Window3d extends JFrame implements ActionListener, MouseListener, M
     public static void main(String[] args) {
         Window3d window = new Window3d();
 
-        CustomThread thread = new CustomThread(() -> {
+        /*CustomThread thread = new CustomThread(() -> {
             window.bgPanel.repaint();
         }, 20, () -> false);
-        thread.start();
+        thread.start();*/
 
     }
 }

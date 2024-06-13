@@ -26,7 +26,7 @@ public class CanvasPanel extends JPanel {
         this.width = width;
         this.height = height;
 
-        this.director = new int[]{0, 0, 400};
+        this.director = new int[]{0, 0, 1500};
 
         this.origin2D = new int[]{width / 2, height / 2};
 
@@ -142,8 +142,8 @@ public class CanvasPanel extends JPanel {
         grid();
         //axis(director, 1, buffer);
 
-        venator.angles = new double[]{Math.PI / 2, 0, angle};
-        venator.draw(director, "perspective", buffer, angle);
+        venator.angles = new double[]{0, 0, 0};
+        venator.draw(director, "oblique", buffer, angle);
 
        /* Venator venator2 = new Venator(530, 350, 100, 1, new double[]{0, 0, 0});
         venator2.angles = new double[]{Math.PI / 2, 0, Math.PI};
