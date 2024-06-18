@@ -841,29 +841,42 @@ public class Draw {
     public static void fillPolygon(int[] xPoints, int[] yPoints, int[] center, Color color, BufferedImage buffer) {
         int nPoints = xPoints.length;
 
+        // Draw the polygon outline
         drawPolygon(xPoints, yPoints, color, buffer);
 
-        // Calculate centroid of the polygon
-        int sumX = 0;
-        int sumY = 0;
+        // Calculate the area of the polygon using the Shoelace formula
+        double area = 0;
         for (int i = 0; i < nPoints; i++) {
-            sumX += xPoints[i];
-            sumY += yPoints[i];
+            int nextIndex = (i + 1) % nPoints;
+            area += xPoints[i] * yPoints[nextIndex] - yPoints[i] * xPoints[nextIndex];
         }
-        int centroidX = sumX / nPoints;
-        int centroidY = sumY / nPoints;
+        area = Math.abs(area) / 2.0;
 
-        // Now fill the polygon using flood fill from the centroid
-        if (center == null) {
-            if (Utils.isPointInPolygon(centroidX, centroidY, xPoints, yPoints)) {
-                Utils.floodFill(centroidX, centroidY, color, buffer);
+        // Check if the polygon has a non-zero area
+        if (area > 200) {
+            // Calculate centroid of the polygon
+            int sumX = 0;
+            int sumY = 0;
+            for (int i = 0; i < nPoints; i++) {
+                sumX += xPoints[i];
+                sumY += yPoints[i];
             }
-        } else {
-            if (Utils.isPointInPolygon(center[0], center[1], xPoints, yPoints)) {
-                Utils.floodFill(center[0], center[1], color, buffer);
+            int centroidX = sumX / nPoints;
+            int centroidY = sumY / nPoints;
+
+            // Determine the starting point for flood fill
+            int startX = center != null ? center[0] : centroidX;
+            int startY = center != null ? center[1] : centroidY;
+
+            // Ensure the starting point is inside the polygon and within image boundaries
+            if (Utils.isPointInPolygon(startX, startY, xPoints, yPoints) &&
+                    startX >= 0 && startX < buffer.getWidth() &&
+                    startY >= 0 && startY < buffer.getHeight()) {
+                Utils.floodFill(startX, startY, color, buffer);
             }
         }
     }
+
 
     public static void fillRectScaled(int x1, int y1, int x2, int y2, double scale, int x0, int y0, Color color, BufferedImage buffer) {
         int[] rectXPoints = new int[]{x1, x2, x2, x1};

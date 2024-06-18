@@ -139,11 +139,11 @@ public class CanvasPanel extends JPanel {
         Graphics gBuffer = buffer.getGraphics();
         gBuffer.setColor(new Color(39, 43, 76));
         gBuffer.fillRect(0, 0, this.getWidth(), this.getHeight());
-        grid();
+        //grid();
         //axis(director, 1, buffer);
 
-        venator.angles = new double[]{0, 0, 0};
-        venator.draw(director, "oblique", buffer, angle);
+        venator.angles = new double[]{Math.PI / 2, 0, angle};
+        venator.draw(director, "perspective", buffer, angle);
 
        /* Venator venator2 = new Venator(530, 350, 100, 1, new double[]{0, 0, 0});
         venator2.angles = new double[]{Math.PI / 2, 0, Math.PI};

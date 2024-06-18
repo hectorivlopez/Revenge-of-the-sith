@@ -112,6 +112,29 @@ public class Utils {
         return unit.equals("R") ? 2 * Math.PI : 360;
     }
 
+    public static int[] calCentroid(int[][] surface) {
+        int sumX = 0, sumY = 0, sumZ = 0;
+        int n = surface.length;
+
+        for (int[] point : surface) {
+            sumX += point[0];
+            sumY += point[1];
+            sumZ += point[2];
+        }
+
+        return new int[]{sumX / n, sumY / n, sumZ / n};
+    }
+
+    public static int findMin(int[] array) {
+        int min = array[0];
+        for (int i = 1; i < array.length; i++) {
+            if (array[i] < min) {
+                min = array[i];
+            }
+        }
+        return min;
+    }
+
     // Drawing
     public static void floodFill(int x, int y, Color targetColor, BufferedImage buffer) {
         if (x >= 0 && x < buffer.getWidth() && y >= 0 && y < buffer.getHeight()) {
@@ -151,7 +174,6 @@ public class Utils {
 
         }
     }
-
     public static void floodFillTarget(int x, int y, Color targetColor, Color fillColor, BufferedImage buffer) {
         int originalColor = buffer.getRGB(x, y);
         if (originalColor == fillColor.getRGB() || originalColor == targetColor.getRGB()) {
