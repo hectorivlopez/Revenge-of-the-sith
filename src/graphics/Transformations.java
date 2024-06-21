@@ -1,5 +1,7 @@
 package graphics;
 
+import java.util.Arrays;
+
 public class Transformations {
     public static int[][] translate(int[] xPoints, int[] yPoints, int xMove, int yMove) {
         int[][] initialMatrix = new int[xPoints.length][xPoints.length];
@@ -343,4 +345,22 @@ public class Transformations {
    }
 
 
+    public static int[][] transform3D(int[][] points, int[] center, double scale, double[] angles, double[] anglesAx, int[][][] axis) {
+        int[][] pointsRot = new int[points.length][points[0].length];
+
+        for (int i = 0; i < points.length; i++) {
+            pointsRot[i] = Arrays.copyOf(points[i], points[i].length);
+        }
+
+        if (anglesAx != null) {
+            for (int i = 0; i < anglesAx.length; i++) {
+                pointsRot = rotateAroundLine(pointsRot[0], pointsRot[1], pointsRot[2], axis[i][0], axis[i][1], anglesAx[i]);
+            }
+        }
+
+        int[][] rotatedPoints = rotate3D(pointsRot[0], pointsRot[1], pointsRot[2], center[0], center[1], center[2], false, angles[0], angles[1], angles[2]);
+        int[][] scaledPoints = scale3D(rotatedPoints[0], rotatedPoints[1], rotatedPoints[2], center[0], center[1], center[2], false, scale, scale, scale);
+
+        return scaledPoints;
+    }
 }

@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Random;
 
 public class Utils {
     public static int[][] multiplyMatrices(double[][] scaleMatrix, int[][] initialMatrix) {
@@ -112,17 +113,30 @@ public class Utils {
         return unit.equals("R") ? 2 * Math.PI : 360;
     }
 
-    public static int[] calCentroid(int[][] surface) {
-        int sumX = 0, sumY = 0, sumZ = 0;
-        int n = surface.length;
+    public static int[] calCentroid(int[][] points) {
+        int n = points.length;
+        int m = points[0].length;
+        int[] sums = new int[n];
 
-        for (int[] point : surface) {
-            sumX += point[0];
-            sumY += point[1];
-            sumZ += point[2];
+        for (int i = 0; i < n; i++) {
+            for(int j = 0; j < m; j++) {
+                sums[i] += points[i][j];
+            }
         }
 
-        return new int[]{sumX / n, sumY / n, sumZ / n};
+        int[] centroid = new int[n];
+        for(int i = 0; i < n; i++) {
+            centroid[i] = (int) ((double) sums[i] /((double) m));
+        }
+        return centroid;
+    }
+
+    public static int[] calProjectedCenter(int[][] points, int[] center, int[] director, String projection) {
+        if(center == null) {
+            center = calCentroid(points);
+        }
+        int[][] projectedCenter = Draw3d.projection(new int[][]{new int[]{center[0], 1, 1, 1}, new int[]{center[1], 1, 1, 1}, new int[]{center[2], 1, 1, 1}}, director, projection);
+        return new int[]{projectedCenter[0][0], projectedCenter[1][0]};
     }
 
     public static int findMin(int[] array) {
@@ -133,6 +147,16 @@ public class Utils {
             }
         }
         return min;
+    }
+
+    public static int findMax(int[] array) {
+        int max = array[0];
+        for (int i = 1; i < array.length; i++) {
+            if (array[i] > max) {
+                max = array[i];
+            }
+        }
+        return max;
     }
 
     // Drawing
@@ -269,6 +293,36 @@ public class Utils {
             y--;
         }
 
+    }
+
+
+    public static Color[] generateColorVariants(Color baseColor, int numberOfVariants) {
+        Color[] colorVariants = new Color[numberOfVariants];
+        int step = 10; // Define the step size for each color component adjustment
+        int totalSteps = numberOfVariants / 3 + 1; // Calculate total steps needed for each component to vary enough
+
+        for (int i = 0; i < numberOfVariants; i++) {
+            int red = baseColor.getRed();
+            int green = baseColor.getGreen();
+            int blue = baseColor.getBlue();
+
+            // Adjust each color component in sequence to ensure all colors are different
+            if (i % 3 == 0) {
+                red = clampColorValue(baseColor.getRed() + (i / 3) * step);
+            } else if (i % 3 == 1) {
+                green = clampColorValue(baseColor.getGreen() + (i / 3) * step);
+            } else if (i % 3 == 2) {
+                blue = clampColorValue(baseColor.getBlue() + (i / 3) * step);
+            }
+
+            colorVariants[i] = new Color(red, green, blue);
+        }
+
+        return colorVariants;
+    }
+
+    private static int clampColorValue(int value) {
+        return Math.max(0, Math.min(255, value));
     }
 
     public static int calcBit(int number) {

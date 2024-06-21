@@ -844,6 +844,17 @@ public class Draw {
         // Draw the polygon outline
         drawPolygon(xPoints, yPoints, color, buffer);
 
+        // Calculate the length of each side and find the maximum length
+        double maxSideLength = 0;
+        for (int i = 0; i < nPoints; i++) {
+            int nextIndex = (i + 1) % nPoints;
+            double sideLength = Math.sqrt(Math.pow(xPoints[nextIndex] - xPoints[i], 2) +
+                    Math.pow(yPoints[nextIndex] - yPoints[i], 2));
+            if (sideLength > maxSideLength) {
+                maxSideLength = sideLength;
+            }
+        }
+
         // Calculate the area of the polygon using the Shoelace formula
         double area = 0;
         for (int i = 0; i < nPoints; i++) {
@@ -853,7 +864,7 @@ public class Draw {
         area = Math.abs(area) / 2.0;
 
         // Check if the polygon has a non-zero area
-        if (area > 200) {
+        if (area > maxSideLength * 2 + 4) {
             // Calculate centroid of the polygon
             int sumX = 0;
             int sumY = 0;

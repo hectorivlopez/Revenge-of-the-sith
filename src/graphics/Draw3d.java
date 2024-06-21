@@ -3,6 +3,7 @@ package graphics;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.nio.Buffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static graphics.Transformations.*;
@@ -177,21 +178,7 @@ public class Draw3d {
 
         int numVertices = xPoints.length;
 
-        int xSum = 0;
-        int ySum = 0;
-        int zSum = 0;
-
-        for (int i = 0; i < numVertices; i++) {
-            xSum += xPoints[i];
-            ySum += yPoints[i];
-            zSum += zPoints[i];
-        }
-
-        int xc = (int) ((double) xSum / ((double) numVertices));
-        int yc = (int) ((double) ySum / ((double) numVertices));
-        int zc = (int) ((double) zSum / ((double) numVertices));
-
-        int[] centroid = {xc, yc, zc};
+        int[] centroid = Utils.calCentroid(points);
 
         if (p0 == null) p0 = centroid;
 
@@ -283,9 +270,9 @@ public class Draw3d {
             }
         } else {
             int[][] heightsPoints = new int[][]{
-                    new int[]{xc + (int) heightVector1[0], xc + (int) heightVector2[0], 1},
-                    new int[]{yc + (int) heightVector1[1], yc + (int) heightVector2[1], 1},
-                    new int[]{zc + (int) heightVector1[2], zc + (int) heightVector2[2], 1},
+                    new int[]{centroid[0] + (int) heightVector1[0], centroid[0] + (int) heightVector2[0], 1},
+                    new int[]{centroid[1] + (int) heightVector1[1], centroid[1] + (int) heightVector2[1], 1},
+                    new int[]{centroid[2] + (int) heightVector1[2], centroid[2] + (int) heightVector2[2], 1},
             };
 
             // Scale
@@ -317,95 +304,134 @@ public class Draw3d {
         }
     }
 
-    public static void surface(int[][] points, int[] director, String projection, double direction, boolean develop, int[] fillCenter, Color borderColor, Color color, BufferedImage buffer) {
+    public static void surface(int[][] points, int[] director, String projection, double direction, boolean develop, Color borderColor, Color color, BufferedImage buffer) {
         // Calculate the centroid
-        int[] xPoints = points[0];
-        int[] yPoints = points[1];
-        int[] zPoints = points[2];
-
-        int numVertices = xPoints.length;
-
-        int xSum = 0;
-        int ySum = 0;
-        int zSum = 0;
-
-        for (int i = 0; i < numVertices; i++) {
-            xSum += xPoints[i];
-            ySum += yPoints[i];
-            zSum += zPoints[i];
-        }
-
-        int xc = (int) ((double) xSum / ((double) numVertices));
-        int yc = (int) ((double) ySum / ((double) numVertices));
-        int zc = (int) ((double) zSum / ((double) numVertices));
-
-
+        int[] centroid = Utils.calCentroid(points);
 
         int[][] projectedPoints = projection(points, director, projection);
 
-        if(direction != 0) {
-            // Back-face culling
-            double[] perpendicularVector = Utils.calculatePerpendicularVector(points[0], points[1], points[2], 10, direction);
-
-            double[] directionVector = new double[]{
-                    director[0],
-                    director[1],
-                    director[2]
-            };
-
-            if (projection.equals("orthogonal")) {
-                directionVector = new double[]{0, 0, 1};
-            }
-
-            if (projection.equals("perspective")) {
-                directionVector = new double[]{
-                        director[0] - xc,
-                        director[1] - yc,
-                        director[2] - zc
-                };
-            }
-
-            int[][] vec = new int[][] {
-                    new int[]{xc, (int) (xc + perpendicularVector[0])},
-                    new int[]{yc, (int) (yc + perpendicularVector[1])},
-                    new int[]{zc, (int) (zc + perpendicularVector[2])},
-            };
-
-            int[][] proj = projection(
-                    vec,
-                    director,
-                    projection
-            );
-
-            double dotProduct = Utils.calculateDotProduct(perpendicularVector, directionVector);
-
+        boolean isVisible = backFaceCulling(points, centroid, director, projection, direction);
+        if (direction == 0 || isVisible) {
             // Drawing
-            if (dotProduct > 0) {
-                if(fillCenter != null) {
-                    int[][] fillVec = new int[][] {
-                            new int[]{fillCenter[0]},
-                            new int[]{fillCenter[1]},
-                            new int[]{fillCenter[2]},
-                    };
-
-                    if(color != null) Draw.fillPolygon(projectedPoints[0], projectedPoints[1], new int[]{fillVec[0][0], fillVec[1][0]}, color, buffer);
-
-                }
-                else {
-                    if(color != null) Draw.fillPolygon(projectedPoints[0], projectedPoints[1], new int[]{proj[0][0], proj[1][0]}, color, buffer);
-                }
-                Draw.drawPolygon(projectedPoints[0], projectedPoints[1], borderColor, buffer);
+            if (color != null) {
+                int[] center = Utils.calProjectedCenter(null, centroid, director, projection);
+                Draw.fillPolygon(projectedPoints[0], projectedPoints[1], new int[]{center[0], center[1]}, color, buffer);
             }
+            if(borderColor != null) Draw.drawPolygon(projectedPoints[0], projectedPoints[1], borderColor, buffer);
+        }
+    }
 
-            if(develop) {
-                Draw.fillCircle(proj[0][0], proj[1][0], 3, Color.red, buffer);
-                drawLine(proj[0][0], proj[1][0], proj[0][1], proj[1][1], Color.green, buffer);
-            }
+    public static void drawPolyhedronFaces(int[][][] levels, int[] ignoreFaces, int direction, int[] director, String projection, Color borderColor, Color color, BufferedImage buffer) {
+        int numLevels = levels.length;
+        int numVertices = levels[0][0].length;
 
+        // All faces
+        int numFaces = numVertices * (numLevels - 1) + 2;
+        ArrayList<Surface> allSurfaces = new ArrayList<>();
+
+        // Upside and down faces
+        int[][] initFace = levels[0];
+        int[][] finalFace = levels[numLevels - 1];
+
+        int ignoreIndex = 0;
+
+        if(ignoreFaces != null && ignoreIndex < ignoreFaces.length && ignoreFaces[ignoreIndex] == 0) {
+            ignoreIndex++;
         }
         else {
-            if(color != null) Draw.fillPolygon(projectedPoints[0], projectedPoints[1], null, color, buffer);
-            Draw.drawPolygon(projectedPoints[0], projectedPoints[1], borderColor, buffer);
+            Surface initSurface = new Surface(initFace, -1 * direction, borderColor, color);
+            allSurfaces.add(initSurface);
+        }
+        if(ignoreFaces != null && ignoreIndex < ignoreFaces.length && ignoreFaces[ignoreIndex] == 1) {
+            ignoreIndex++;
+        }
+        else {
+            Surface finalSurface = new Surface(finalFace, 1 * direction, borderColor, color);
+            allSurfaces.add(finalSurface);
+        }
+
+        for(int i = 0; i < numLevels - 1; i++) {
+            for(int j = 0; j < numVertices; j++) {
+                int faceNum = (i * numVertices) + j + 2;
+                if(ignoreFaces != null && ignoreIndex < ignoreFaces.length && ignoreFaces[ignoreIndex] == faceNum) {
+                    ignoreIndex++;
+                    continue;
+                }
+
+                int[][] sideFace;
+                int next = j < numVertices - 1 ? j + 1 : 0;
+
+                sideFace = new int[][]{
+                        new int[]{levels[i][0][j], levels[i][0][next], levels[i + 1][0][next], levels[i + 1][0][j]},
+                        new int[]{levels[i][1][j], levels[i][1][next], levels[i + 1][1][next], levels[i + 1][1][j]},
+                        new int[]{levels[i][2][j], levels[i][2][next], levels[i + 1][2][next], levels[i + 1][2][j]},
+                };
+
+                Surface surface = new Surface(sideFace, 1 * direction, borderColor, color);
+                allSurfaces.add(surface);
+            }
+        }
+
+        drawSortedSurfaces(allSurfaces, director, projection, buffer);
+    }
+
+    public static boolean backFaceCulling(int[][] face, int[] centroid, int[] director, String projection, double direction) {
+        double[] perpendicularVector = Utils.calculatePerpendicularVector(face[0], face[1], face[2], 1, direction);
+
+        double[] directionVector = new double[]{
+                director[0],
+                director[1],
+                director[2]
+        };
+
+        if (projection.equals("orthogonal")) {
+            directionVector = new double[]{0, 0, 1};
+        }
+
+        if (projection.equals("perspective")) {
+            if(centroid == null) centroid = Utils.calCentroid(face);
+            directionVector = new double[]{
+                    director[0] - centroid[0],
+                    director[1] - centroid[1],
+                    director[2] - centroid[2]
+            };
+        }
+
+        double dotProduct = Utils.calculateDotProduct(perpendicularVector, directionVector);
+
+        return dotProduct > 0;
+    }
+
+        /*public static void drawSurfaceCenter(int) {
+
+        }*/
+
+    public static void drawSortedSurfaces(ArrayList<Surface> surfaces, int[] director, String projection, BufferedImage buffer) {
+        int[][] centroids = new int[surfaces.size()][2];
+
+        for(int i = 0; i < surfaces.size(); i++) {
+            //int[] centroid = Utils.calCentroid(surfaces.get(i).points);
+            //centroids[i] = new int[]{i, centroid[2]};
+            centroids[i] = new int[]{i, Utils.findMin(surfaces.get(i).points[2])};
+        }
+
+       /* System.out.println(centroids[0][1]);
+        System.out.println(centroids[3][1]);*/
+       /* Arrays.sort(centroids, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] a, int[] b) {
+                return Integer.compare(a[1], b[1]);
+            }
+        });*/
+
+        //Arrays.sort(centroids, Comparator.comparingInt(a -> a[1]));
+
+        //System.out.println("------------");
+        for(int i = 0; i < surfaces.size(); i++) {
+            int index = centroids[i][0];
+            //System.out.println(index);
+            //System.out.println(centroids[i][1]);
+            surfaces.get(index).draw(director, projection, buffer);
         }
 
     }

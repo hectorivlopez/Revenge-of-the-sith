@@ -26,7 +26,7 @@ public class CanvasPanel extends JPanel {
         this.width = width;
         this.height = height;
 
-        this.director = new int[]{0, 0, 1500};
+        this.director = new int[]{0, 0, 1000};
 
         this.origin2D = new int[]{width / 2, height / 2};
 

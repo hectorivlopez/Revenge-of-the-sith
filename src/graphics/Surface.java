@@ -21,6 +21,6 @@ public class Surface {
     }
 
     public void draw(int[] director, String projection, BufferedImage buffer) {
-        Draw3d.surface(points, director, projection, direction, develop, fillCenter, borderColor, color, buffer);
+        Draw3d.surface(points, director, projection, direction, develop, borderColor, color, buffer);
     }
 }
