@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 
 import static graphics.Transformations.*;
 import static graphics.Draw.*;
@@ -304,7 +305,7 @@ public class Draw3d {
         }
     }
 
-    public static void surface(int[][] points, int[] director, String projection, double direction, boolean develop, Color borderColor, Color color, BufferedImage buffer) {
+    public static void drawSurface(int[][] points, int[] director, String projection, double direction, boolean develop, Color borderColor, Color color, BufferedImage buffer) {
         // Calculate the centroid
         int[] centroid = Utils.calCentroid(points);
 
@@ -402,38 +403,19 @@ public class Draw3d {
         return dotProduct > 0;
     }
 
-        /*public static void drawSurfaceCenter(int) {
-
-        }*/
-
     public static void drawSortedSurfaces(ArrayList<Surface> surfaces, int[] director, String projection, BufferedImage buffer) {
         int[][] centroids = new int[surfaces.size()][2];
 
-        for(int i = 0; i < surfaces.size(); i++) {
-            //int[] centroid = Utils.calCentroid(surfaces.get(i).points);
-            //centroids[i] = new int[]{i, centroid[2]};
+        for (int i = 0; i < surfaces.size(); i++) {
             centroids[i] = new int[]{i, Utils.findMin(surfaces.get(i).points[2])};
         }
 
-       /* System.out.println(centroids[0][1]);
-        System.out.println(centroids[3][1]);*/
-       /* Arrays.sort(centroids, new Comparator<int[]>() {
-            @Override
-            public int compare(int[] a, int[] b) {
-                return Integer.compare(a[1], b[1]);
-            }
-        });*/
+        Arrays.sort(centroids, Comparator.comparingInt(a -> a[1]));
 
-        //Arrays.sort(centroids, Comparator.comparingInt(a -> a[1]));
-
-        //System.out.println("------------");
-        for(int i = 0; i < surfaces.size(); i++) {
+        for (int i = 0; i < surfaces.size(); i++) {
             int index = centroids[i][0];
-            //System.out.println(index);
-            //System.out.println(centroids[i][1]);
             surfaces.get(index).draw(director, projection, buffer);
         }
-
     }
 
 }

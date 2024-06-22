@@ -59,14 +59,14 @@ public class CanvasPanel extends JPanel {
         rotateThread.start();
 
         CustomThread moveThread = new CustomThread(() -> {
-            if (toRight) {
                 x ++;
+           /* if (toRight) {
                 if (x >= 50) toRight = false;
             }
             else {
                 x --;
                 if (x <= -50) toRight = true;
-            }
+            }*/
         }, 10, () -> false);
         moveThread.start();
 
@@ -142,7 +142,11 @@ public class CanvasPanel extends JPanel {
         //grid();
         //axis(director, 1, buffer);
 
-        venator.angles = new double[]{Math.PI / 2, 0, angle};
+        venator.angles = new double[]{0, 0, 0};
+        venator.xc = x;
+        //venator.yc = x;
+        //venator.zc = x;
+
         venator.draw(director, "perspective", buffer, angle);
 
         //Draw.drawLine(484, 100, 484, 400, Color.red, buffer);

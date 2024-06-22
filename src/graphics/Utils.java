@@ -119,20 +119,20 @@ public class Utils {
         int[] sums = new int[n];
 
         for (int i = 0; i < n; i++) {
-            for(int j = 0; j < m; j++) {
+            for (int j = 0; j < m; j++) {
                 sums[i] += points[i][j];
             }
         }
 
         int[] centroid = new int[n];
-        for(int i = 0; i < n; i++) {
-            centroid[i] = (int) ((double) sums[i] /((double) m));
+        for (int i = 0; i < n; i++) {
+            centroid[i] = (int) ((double) sums[i] / ((double) m));
         }
         return centroid;
     }
 
     public static int[] calProjectedCenter(int[][] points, int[] center, int[] director, String projection) {
-        if(center == null) {
+        if (center == null) {
             center = calCentroid(points);
         }
         int[][] projectedCenter = Draw3d.projection(new int[][]{new int[]{center[0], 1, 1, 1}, new int[]{center[1], 1, 1, 1}, new int[]{center[2], 1, 1, 1}}, director, projection);
@@ -160,6 +160,257 @@ public class Utils {
     }
 
     // Drawing
+    public static int[] adjustStartFillPoint(int[] xPoints, int[] yPoints, int startX, int startY, BufferedImage buffer) {
+        if (startX < 0) {
+            // Find the rightmost line
+            int maxIndex = 0;
+            int max2Index = 0;
+
+            int x1 = xPoints[0];
+            int y1 = yPoints[0];
+
+            for (int i = 1; i < xPoints.length; i++) {
+                if (xPoints[i] > x1) {
+                    x1 = xPoints[i];
+                    y1 = yPoints[i];
+                    maxIndex = i;
+                }
+            }
+
+            if (maxIndex < xPoints.length - 1) max2Index = maxIndex + 1;
+
+            int x2 = xPoints[max2Index];
+            int y2 = yPoints[max2Index];
+
+            if (maxIndex == 0) {
+                if (xPoints[xPoints.length - 1] > x2) max2Index = xPoints.length - 1;
+            }
+            else if(maxIndex == xPoints.length - 1){
+                if(xPoints[xPoints.length - 2] > x2) max2Index = xPoints.length - 2;
+            }
+            else if(xPoints[maxIndex - 1] > x2) max2Index = maxIndex - 1;
+
+            x2 = xPoints[max2Index];
+            y2 = yPoints[max2Index];
+
+            // Calculate the center of the rightmost line
+            startX = ((x1 + x2) / 2) - 2;
+            startY = (y1 + y2) / 2;
+
+            for(int i = 0; i < 10; i++){
+                if(!isPointInPolygon(startX, startY, xPoints, yPoints)) startY++;
+                else return new int[]{startX, startY};
+            }
+
+            startY = (y1 + y2) / 2;
+
+            for(int i = 0; i < 10; i++){
+                if(!isPointInPolygon(startX, startY, xPoints, yPoints)) startY--;
+                else return new int[]{startX, startY};
+            }
+        }
+
+        if (startX >= buffer.getWidth()) {
+
+            // Find the rightmost line
+            int minIndex = 0;
+            int min2Index = 0;
+
+            int x1 = xPoints[0];
+            int y1 = yPoints[0];
+
+            for (int i = 1; i < xPoints.length; i++) {
+                if (xPoints[i] < x1) {
+                    x1 = xPoints[i];
+                    y1 = yPoints[i];
+                    minIndex = i;
+                }
+            }
+
+            if (minIndex < xPoints.length - 1) min2Index = minIndex + 1;
+
+            int x2 = xPoints[min2Index];
+            int y2 = yPoints[min2Index];
+
+            if (minIndex == 0) {
+                if (xPoints[xPoints.length - 1] < x2) min2Index = xPoints.length - 1;
+            }
+            else if(minIndex == xPoints.length - 1){
+                if(xPoints[xPoints.length - 2] < x2) min2Index = xPoints.length - 2;
+            }
+            else if(xPoints[minIndex - 1] < x2) min2Index = minIndex - 1;
+
+            x2 = xPoints[min2Index];
+            y2 = yPoints[min2Index];
+
+            // Calculate the center of the rightmost line
+            startX = ((x1 + x2) / 2) + 5;
+            startY = (y1 + y2) / 2;
+
+            for(int i = 0; i < 10; i++){
+                if(!isPointInPolygon(startX, startY, xPoints, yPoints)) startY++;
+                else return new int[]{startX, startY};
+            }
+
+            startY = (y1 + y2) / 2;
+
+            for(int i = 0; i < 10; i++){
+                if(!isPointInPolygon(startX, startY, xPoints, yPoints)) startY--;
+                else return new int[]{startX, startY};
+            }
+        }
+
+        if (startY < 0) {
+            // Find the rightmost line
+            int maxIndex = 0;
+            int max2Index = 0;
+
+            int x1 = xPoints[0];
+            int y1 = yPoints[0];
+
+            for (int i = 1; i < xPoints.length; i++) {
+                if (xPoints[i] > y1) {
+                    x1 = xPoints[i];
+                    y1 = yPoints[i];
+                    maxIndex = i;
+                }
+            }
+
+            if (maxIndex < xPoints.length - 1) max2Index = maxIndex + 1;
+
+            int x2 = xPoints[max2Index];
+            int y2 = yPoints[max2Index];
+
+            if (maxIndex == 0) {
+                if (xPoints[xPoints.length - 1] > y2) max2Index = xPoints.length - 1;
+            }
+            else if(maxIndex == xPoints.length - 1){
+                if(xPoints[xPoints.length - 2] > y2) max2Index = xPoints.length - 2;
+            }
+            else if(xPoints[maxIndex - 1] > y2) max2Index = maxIndex - 1;
+
+            x2 = xPoints[max2Index];
+            y2 = yPoints[max2Index];
+
+            // Calculate the center of the rightmost line
+            startX = (y1 + y2) / 2;
+            startY = ((x1 + x2) / 2) - 2;
+
+            for(int i = 0; i < 10; i++){
+                if(!isPointInPolygon(startX, startY, xPoints, yPoints)) startX++;
+                else return new int[]{startX, startY};
+            }
+
+            startX = (y1 + y2) / 2;
+
+            for(int i = 0; i < 10; i++){
+                if(!isPointInPolygon(startX, startY, xPoints, yPoints)) startX--;
+                else return new int[]{startX, startY};
+            }
+        }
+
+        if (startY >= buffer.getHeight()) {
+            // Find the rightmost line
+            int maxIndex = 0;
+            int max2Index = 0;
+
+            int x1 = xPoints[0];
+            int y1 = yPoints[0];
+
+            for (int i = 1; i < xPoints.length; i++) {
+                if (xPoints[i] < y1) {
+                    x1 = xPoints[i];
+                    y1 = yPoints[i];
+                    maxIndex = i;
+                }
+            }
+
+            if (maxIndex < xPoints.length - 1) max2Index = maxIndex + 1;
+
+            int x2 = xPoints[max2Index];
+            int y2 = yPoints[max2Index];
+
+            if (maxIndex == 0) {
+                if (xPoints[xPoints.length - 1] < y2) max2Index = xPoints.length - 1;
+            }
+            else if(maxIndex == xPoints.length - 1){
+                if(xPoints[xPoints.length - 2] < y2) max2Index = xPoints.length - 2;
+            }
+            else if(xPoints[maxIndex - 1] < y2) max2Index = maxIndex - 1;
+
+            x2 = xPoints[max2Index];
+            y2 = yPoints[max2Index];
+
+            // Calculate the center of the rightmost line
+            startX = (y1 + y2) / 2;
+            startY = ((x1 + x2) / 2) + 2;
+
+            for(int i = 0; i < 10; i++){
+                if(!isPointInPolygon(startX, startY, xPoints, yPoints)) startX++;
+                else return new int[]{startX, startY};
+            }
+
+            startX = (y1 + y2) / 2;
+
+            for(int i = 0; i < 10; i++){
+                if(!isPointInPolygon(startX, startY, xPoints, yPoints)) startX--;
+                else return new int[]{startX, startY};
+            }
+        }
+        return new int[]{startX, startY};
+    }
+
+/*    public static int[] adjustStartFillPoint(int[] xPoints, int[] yPoints, int startX, int startY, BufferedImage buffer) {
+        if (startX < 0) {
+            // Find the rightmost line
+            int maxIndex = 0;
+            int max2Index = 0;
+            int max3Index = 0;
+
+            int x1 = xPoints[0];
+            int y1 = yPoints[0];
+
+            for (int i = 1; i < xPoints.length; i++) {
+                if (xPoints[i] > x1) {
+                    x1 = xPoints[i];
+                    y1 = yPoints[i];
+                    maxIndex = i;
+                }
+            }
+
+            if (maxIndex < xPoints.length - 1) max2Index = maxIndex + 1;
+            if (maxIndex > 0) max3Index = maxIndex - 1;
+
+            if (maxIndex == 0) max3Index = xPoints.length - 1;
+            else if (maxIndex == xPoints.length - 1) max2Index = 0;
+
+            int x2 = xPoints[max2Index];
+            int y2 = yPoints[max2Index];
+
+            int x3 = xPoints[max3Index];
+            int y3 = yPoints[max3Index];
+
+            int[] cornerCentroid = calCentroid(new int[][]{new int[]{x1, x2, x3}, new int[]{y1, y2, y3}});
+            int[] distanceToCorner = new int[] {
+                    x1 - cornerCentroid[0], y1 - cornerCentroid[1]
+            };
+            double distance = Math.sqrt(Math.pow(distanceToCorner[0], 2) + Math.pow(distanceToCorner[1], 2));
+            double[] normalVector = new double[]{(double) distanceToCorner[0] / distance, (double) distanceToCorner[1] / distance};
+
+            // Calculate the center of the rightmost line
+            startX = x1 - (int) (normalVector[0] * 20);
+            startY = y1 - (int) (normalVector[1] * 20);
+            Draw.fillCircle(x1, y1, 3, Color.blue, buffer);
+            Draw.fillCircle(x2, y2, 3, Color.orange, buffer);
+            Draw.fillCircle(x3, y3, 3, Color.red, buffer);
+
+        }
+
+
+        return new int[]{startX, startY};
+    }*/
+
+
     public static void floodFill(int x, int y, Color targetColor, BufferedImage buffer) {
         if (x >= 0 && x < buffer.getWidth() && y >= 0 && y < buffer.getHeight()) {
             int originalColor = buffer.getRGB(x, y);
@@ -198,6 +449,7 @@ public class Utils {
 
         }
     }
+
     public static void floodFillTarget(int x, int y, Color targetColor, Color fillColor, BufferedImage buffer) {
         int originalColor = buffer.getRGB(x, y);
         if (originalColor == fillColor.getRGB() || originalColor == targetColor.getRGB()) {
@@ -326,12 +578,12 @@ public class Utils {
     }
 
     public static int calcBit(int number) {
-        if(number <= 0) return 0;
+        if (number <= 0) return 0;
         else return 1;
     }
 
     public static void calcEndsPos(int[][] endsPos, int xMin, int xMax, int yMin, int yMax, LineToCrop line) {
-        for(int j = 0; j <= 1; j++) {
+        for (int j = 0; j <= 1; j++) {
             endsPos[j][0] = calcBit(yMin - line.ends[j][1]);
             endsPos[j][1] = calcBit(line.ends[j][1] - yMax);
             endsPos[j][2] = calcBit(xMin - line.ends[j][0]);

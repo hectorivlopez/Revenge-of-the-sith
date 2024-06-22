@@ -866,18 +866,17 @@ public class Draw {
         // Check if the polygon has a non-zero area
         if (area > maxSideLength * 2 + 4) {
             // Calculate centroid of the polygon
-            int sumX = 0;
-            int sumY = 0;
-            for (int i = 0; i < nPoints; i++) {
-                sumX += xPoints[i];
-                sumY += yPoints[i];
-            }
-            int centroidX = sumX / nPoints;
-            int centroidY = sumY / nPoints;
+            int[] centroid = Utils.calCentroid(new int[][]{xPoints, yPoints});
 
             // Determine the starting point for flood fill
-            int startX = center != null ? center[0] : centroidX;
-            int startY = center != null ? center[1] : centroidY;
+            int startX = center != null ? center[0] : centroid[0];
+            int startY = center != null ? center[1] : centroid[1];
+
+            // Adjust if the starting point is not in the screen
+            int[] start = Utils.adjustStartFillPoint(xPoints, yPoints, startX, startY, buffer);
+            startX = start[0];
+            startY = start[1];
+
 
             // Ensure the starting point is inside the polygon and within image boundaries
             if (Utils.isPointInPolygon(startX, startY, xPoints, yPoints) &&
