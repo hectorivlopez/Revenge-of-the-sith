@@ -33,7 +33,7 @@ public class CanvasPanel extends JPanel {
         // Transformations
         this.scale = 1;
         this.angle = 0;
-        this.x = 0;
+        this.x = 2000;
         this.growing = false;
         this.toRight = true;
 
@@ -59,7 +59,7 @@ public class CanvasPanel extends JPanel {
         rotateThread.start();
 
         CustomThread moveThread = new CustomThread(() -> {
-                x ++;
+                x --;
            /* if (toRight) {
                 if (x >= 50) toRight = false;
             }
@@ -142,26 +142,14 @@ public class CanvasPanel extends JPanel {
         //grid();
         //axis(director, 1, buffer);
 
-        venator.angles = new double[]{Math.PI / 2, 0, angle};
+        venator.angles = new double[]{Math.PI / 2, 0, Math.PI};
         //venator.xc = x;
         //venator.yc = x;
         //venator.zc = x;
 
         venator.draw(director, "perspective", buffer, angle);
 
-        //Draw.drawLine(484, 100, 484, 400, Color.red, buffer);
 
-        /*cosa(470, 235, 10);
-        cosa(460, 264, 15);
-        cosa(420, 255, 18);
-
-        cosa(530, 235, 10);
-        cosa(540, 264, 15);
-        cosa(580, 255, 18);*/
-
-       /* Venator venator2 = new Venator(530, 350, 100, 1, new double[]{0, 0, 0});
-        venator2.angles = new double[]{Math.PI / 2, 0, Math.PI};
-        venator2.draw(director, "oblique", buffer, angle);*/
 
         g.drawImage(buffer, 0, 0, this);
     }
