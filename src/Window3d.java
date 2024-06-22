@@ -39,7 +39,7 @@ public class Window3d extends JFrame implements ActionListener, MouseListener, M
         titleBarHeight = 28;
         if (isMacOS) titleBarHeight = 0;
 
-        width = 1001;
+        width = 1200;
         height = 501;
 
         setSize(width, height + titleBarHeight + 40);

@@ -26,7 +26,7 @@ public class CanvasPanel extends JPanel {
         this.width = width;
         this.height = height;
 
-        this.director = new int[]{0, 0, 1000};
+        this.director = new int[]{0, 0, 1500};
 
         this.origin2D = new int[]{width / 2, height / 2};
 
@@ -39,12 +39,12 @@ public class CanvasPanel extends JPanel {
 
         CustomThread scaleThread = new CustomThread(() -> {
             if (growing) {
-                scale += 0.1;
-                if (scale >= 15) growing = false;
+                scale += 0.01;
+                if (scale >= 1.5) growing = false;
             }
             else {
-                scale -= 0.1;
-                if (scale <= 1) growing = true;
+                scale -= 0.01;
+                if (scale <= 0.8) growing = true;
             }
         }, 20, () -> false);
         scaleThread.start();
@@ -70,7 +70,7 @@ public class CanvasPanel extends JPanel {
         }, 10, () -> false);
         moveThread.start();
 
-        this.venator = new Venator(530, 250, 100, 1, new double[]{0, 0, 0});
+        this.venator = new Venator(600, 250, 500, 1, new double[]{0, 0, 0});
     }
 
     public void resize(int width, int height) {
@@ -145,10 +145,36 @@ public class CanvasPanel extends JPanel {
         venator.angles = new double[]{Math.PI / 2, 0, angle};
         venator.draw(director, "perspective", buffer, angle);
 
+        //Draw.drawLine(484, 100, 484, 400, Color.red, buffer);
+
+        /*cosa(470, 235, 10);
+        cosa(460, 264, 15);
+        cosa(420, 255, 18);
+
+        cosa(530, 235, 10);
+        cosa(540, 264, 15);
+        cosa(580, 255, 18);*/
+
        /* Venator venator2 = new Venator(530, 350, 100, 1, new double[]{0, 0, 0});
         venator2.angles = new double[]{Math.PI / 2, 0, Math.PI};
         venator2.draw(director, "oblique", buffer, angle);*/
 
         g.drawImage(buffer, 0, 0, this);
+    }
+
+    public void cosa(int centerX, int centerY, int radius) {
+        int numSides = 8;
+
+        int[] xPoints = new int[numSides];
+        int[] yPoints = new int[numSides];
+        double angleStep = 2 * Math.PI / numSides; // Paso del ángulo en radianes
+
+        for (int i = 0; i < numSides; i++) {
+            double angle = i * angleStep;
+            xPoints[i] = (int) (centerX + radius * Math.cos(angle));
+            yPoints[i] = (int) (centerY + radius * Math.sin(angle));
+        }
+
+        Draw.drawPolygon(xPoints, yPoints, Color.green, buffer);
     }
 }
