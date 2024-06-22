@@ -142,8 +142,8 @@ public class CanvasPanel extends JPanel {
         //grid();
         //axis(director, 1, buffer);
 
-        venator.angles = new double[]{0, 0, 0};
-        venator.xc = x;
+        venator.angles = new double[]{Math.PI / 2, 0, angle};
+        //venator.xc = x;
         //venator.yc = x;
         //venator.zc = x;
 
