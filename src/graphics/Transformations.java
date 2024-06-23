@@ -301,49 +301,56 @@ public class Transformations {
     }
 
     public static int[][] rotateAroundLine(int[] xPoints, int[] yPoints, int[] zPoints, int[] pointA, int[] pointB, double angle) {
-       // Make pointA the origin
-       int x0 = pointA[0];
-       int y0 = pointA[1];
-       int z0 = pointA[2];
+        // Make pointA the origin
+        double x0 = pointA[0];
+        double y0 = pointA[1];
+        double z0 = pointA[2];
 
-       // Vector along the line (pointB - pointA)
-       double ux = pointB[0] - x0;
-       double uy = pointB[1] - y0;
-       double uz = pointB[2] - z0;
-       double norm = Math.sqrt(ux * ux + uy * uy + uz * uz);
-       ux /= norm;
-       uy /= norm;
-       uz /= norm;
+        // Vector along the line (pointB - pointA)
+        double ux = pointB[0] - x0;
+        double uy = pointB[1] - y0;
+        double uz = pointB[2] - z0;
+        double norm = Math.sqrt(ux * ux + uy * uy + uz * uz);
+        ux /= norm;
+        uy /= norm;
+        uz /= norm;
 
-       double cosTheta = Math.cos(angle);
-       double sinTheta = Math.sin(angle);
+        double cosTheta = Math.cos(angle);
+        double sinTheta = Math.sin(angle);
 
-       int[][] resultMatrix = new int[3][xPoints.length];
+        double[][] resultMatrix = new double[3][xPoints.length];
 
-       // Rotation
-       for (int i = 0; i < xPoints.length; i++) {
-           // Translate point to origin
-           double x = xPoints[i] - x0;
-           double y = yPoints[i] - y0;
-           double z = zPoints[i] - z0;
+        // Rotation
+        for (int i = 0; i < xPoints.length; i++) {
+            // Translate point to origin
+            double x = xPoints[i] - x0;
+            double y = yPoints[i] - y0;
+            double z = zPoints[i] - z0;
 
-           // Rotation matrix components
-           double dotProduct = x * ux + y * uy + z * uz;
-           double crossProductX = uy * z - uz * y;
-           double crossProductY = uz * x - ux * z;
-           double crossProductZ = ux * y - uy * x;
+            // Rotation matrix components
+            double dotProduct = x * ux + y * uy + z * uz;
+            double crossProductX = uy * z - uz * y;
+            double crossProductY = uz * x - ux * z;
+            double crossProductZ = ux * y - uy * x;
 
-           double rotatedX = x * cosTheta + crossProductX * sinTheta + ux * dotProduct * (1 - cosTheta);
-           double rotatedY = y * cosTheta + crossProductY * sinTheta + uy * dotProduct * (1 - cosTheta);
-           double rotatedZ = z * cosTheta + crossProductZ * sinTheta + uz * dotProduct * (1 - cosTheta);
+            double rotatedX = x * cosTheta + crossProductX * sinTheta + ux * dotProduct * (1 - cosTheta);
+            double rotatedY = y * cosTheta + crossProductY * sinTheta + uy * dotProduct * (1 - cosTheta);
+            double rotatedZ = z * cosTheta + crossProductZ * sinTheta + uz * dotProduct * (1 - cosTheta);
 
-           // Back to original position
-           resultMatrix[0][i] = (int) (rotatedX + x0);
-           resultMatrix[1][i] = (int) (rotatedY + y0);
-           resultMatrix[2][i] = (int) (rotatedZ + z0);
-       }
+            // Back to original position
+            resultMatrix[0][i] = rotatedX + x0;
+            resultMatrix[1][i] = rotatedY + y0;
+            resultMatrix[2][i] = rotatedZ + z0;
+        }
 
-       return resultMatrix;
+        int[][] intResultMatrix = new int[3][xPoints.length];
+        for (int i = 0; i < xPoints.length; i++) {
+            intResultMatrix[0][i] = (int) Math.round(resultMatrix[0][i]);
+            intResultMatrix[1][i] = (int) Math.round(resultMatrix[1][i]);
+            intResultMatrix[2][i] = (int) Math.round(resultMatrix[2][i]);
+        }
+
+        return intResultMatrix;
    }
 
     /*public static int[][] rotateRespectObject(int[][] face, int[] center, double[] angles) {
@@ -378,6 +385,8 @@ public class Transformations {
 
     }*/
 
+
+
     public static int[][][] rotateRespectObject(int[][] face, int[] center, int[][] ends, double[] angles) {
         int xc = center[0];
         int yc = center[1];
@@ -390,7 +399,11 @@ public class Transformations {
         int[][] rotatedEnds = ends;
         int[][] rotatedFace = face;
 
-
+        int[][] endsToRotate = new int[][]{
+                new int[]{ends[0][0], ends[1][0], ends[2][0]},
+                new int[]{ends[0][1], ends[1][1], ends[2][1]},
+                new int[]{ends[0][2], ends[1][2], ends[2][2]},
+        };
 
         // ---------- Rotate around x axis ----------
         if(angles[0] != 0) {
@@ -399,12 +412,12 @@ public class Transformations {
 
             rotatedFace = rotateAroundLine(face[0], face[1], face[2], xAxis1, xAxis2, angles[0]);
 
-            /*int[][] rotatedEnds2 = new int[][]{
-                    new int[]{rotatedEnds[0][0], rotatedEnds[1][0], rotatedEnds[2][0]},
-                    new int[]{rotatedEnds[0][1], rotatedEnds[1][1], rotatedEnds[2][1]},
-                    new int[]{rotatedEnds[0][2], rotatedEnds[1][2], rotatedEnds[2][2]},
-            };*/
-            rotatedEnds = rotateAroundLine(ends[0], ends[1], ends[2], xAxis1, xAxis2, angles[0]);
+            endsToRotate = rotateAroundLine(endsToRotate[0], endsToRotate[1], endsToRotate[2], xAxis1, xAxis2, angles[0]);
+            rotatedEnds = new  int[][]{
+                    new int[]{endsToRotate[0][0], endsToRotate[1][0], endsToRotate[2][0]},
+                    new int[]{endsToRotate[0][1], endsToRotate[1][1], endsToRotate[2][1]},
+                    new int[]{endsToRotate[0][2], endsToRotate[1][2], endsToRotate[2][2]},
+            };
         }
 
         // ---------- Rotate around y axis ----------
@@ -413,7 +426,13 @@ public class Transformations {
             int[] yAxis2 = new int[]{rotatedEnds[1][0], rotatedEnds[1][1], rotatedEnds[1][2]};
 
             rotatedFace = rotateAroundLine(rotatedFace[0], rotatedFace[1], rotatedFace[2], yAxis1, yAxis2, angles[1]);
-            rotatedEnds = rotateAroundLine(rotatedEnds[0], rotatedEnds[1], rotatedEnds[2], yAxis1, yAxis2, angles[1]);
+
+            endsToRotate = rotateAroundLine(endsToRotate[0], endsToRotate[1], endsToRotate[2], yAxis1, yAxis2, angles[1]);
+            rotatedEnds = new  int[][]{
+                    new int[]{endsToRotate[0][0], endsToRotate[1][0], endsToRotate[2][0]},
+                    new int[]{endsToRotate[0][1], endsToRotate[1][1], endsToRotate[2][1]},
+                    new int[]{endsToRotate[0][2], endsToRotate[1][2], endsToRotate[2][2]},
+            };
         }
 
 
@@ -423,12 +442,18 @@ public class Transformations {
             int[] zAxis2 = new int[]{rotatedEnds[2][0], rotatedEnds[2][1], rotatedEnds[2][2]};
 
             rotatedFace = rotateAroundLine(rotatedFace[0], rotatedFace[1], rotatedFace[2], zAxis1, zAxis2, angles[2]);
-            rotatedEnds = rotateAroundLine(rotatedEnds[0], rotatedEnds[1], rotatedEnds[2], zAxis1, zAxis2, angles[2]);
+
+            endsToRotate = rotateAroundLine(endsToRotate[0], endsToRotate[1], endsToRotate[2], zAxis1, zAxis2, angles[2]);
+            rotatedEnds = new  int[][]{
+                    new int[]{endsToRotate[0][0], endsToRotate[1][0], endsToRotate[2][0]},
+                    new int[]{endsToRotate[0][1], endsToRotate[1][1], endsToRotate[2][1]},
+                    new int[]{endsToRotate[0][2], endsToRotate[1][2], endsToRotate[2][2]},
+            };
         }
 
-        if(angles[1] == 0 && angles[2] == 0) rotatedEnds[0] = ends[0];
+       /* if(angles[1] == 0 && angles[2] == 0) rotatedEnds[0] = ends[0];
         if(angles[0] == 0 && angles[2] == 0) rotatedEnds[1] = ends[1];
-        if(angles[0] == 0 && angles[1] == 0) rotatedEnds[2] = ends[2];
+        if(angles[0] == 0 && angles[1] == 0) rotatedEnds[2] = ends[2];*/
 
         return new int[][][]{rotatedFace, rotatedEnds};
 
