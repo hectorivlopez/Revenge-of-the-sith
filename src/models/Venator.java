@@ -26,10 +26,6 @@ public class Venator {
 
     public int[][] ends;
 
-    int[] director;
-    String projection;
-    BufferedImage buffer;
-
     // ---------- Pov ----------
     public boolean povUp;
     public boolean povLeft;
@@ -275,6 +271,14 @@ public class Venator {
 
     Color borderGray;
 
+    int[][] rotatedXYPlane;
+    int[][] rotatedXZPlane;
+    int[][] rotatedYZPlane;
+
+    int[] director;
+    String projection;
+    BufferedImage buffer;
+
     public Venator(int xc, int yc, int zc, int[] director, String projection, BufferedImage buffer) {
         this.xc = xc;
         this.yc = yc;
@@ -301,16 +305,12 @@ public class Venator {
         this.projection = projection;
         this.buffer = buffer;
 
-
         update();
     }
 
 
     public synchronized void rotate(double[] angles) {
-        /*System.out.println("------------");
-        for(int i = 0; i < 3; i++) {
-            System.out.println(ends[i][0] + ", " + ends[i][1] + ", " + ends[i][2]);
-        }*/
+
         this.angles = angles;
         update();
 
@@ -321,14 +321,11 @@ public class Venator {
         };
 
 
-        this.ends = rotateRespectObject(ends, center, ends, angles)[0];
+        this.ends = rotateRespectObject(cosa, center, ends, angles)[1];
         this.x0 = ends[0];
         this.y0 = ends[1];
         this.z0 = ends[2];
-       /* System.out.println("---");
-        for(int i = 0; i < 3; i++) {
-            System.out.println(ends[i][0] + ", " + ends[i][1] + ", " + ends[i][2]);
-        }*/
+
         this.angles = new double[]{0, 0, 0};
     }
 
@@ -341,22 +338,19 @@ public class Venator {
         calBottom();
         calSides();
 
-
-
-    }
-
-
-
-
-    public synchronized void draw(double ang) {
-        this.ang = ang;
-        boolean[] povCenter =  calPov(center);
+        boolean[] povCenter = calPovCenter(center, director, projection, buffer);
         povUp = povCenter[0];
         povLeft = povCenter[1];
         povFront = povCenter[2];
+    }
 
 
-       /* boolean[] povBack =  calPov(new int[]{x0, yc, zc}, director, projection, buffer);
+    public synchronized void draw(int[] director, String projection, BufferedImage buffer, double ang) {
+        this.ang = ang;
+
+
+        drawPlanes(director, projection, buffer);
+        /*boolean[] povBack =  calPov(new int[]{x0, yc, zc}, director, projection, buffer);
         povUpBack = povBack[0];
         povLeftBack = povBack[1];
         povFrontBack = povBack[2];*/
@@ -365,43 +359,74 @@ public class Venator {
         if (povUp) {
             //if (povFrontBack) drawBack(director, projection, buffer);
 
-            drawSides(true);
+            drawSides(director, projection, true, buffer);
 
-            drawTopSides(true);
+            drawTopSides(director, projection, true, buffer);
 
-            drawTopCenter(true);
+            drawTopCenter(director, projection, true, buffer);
 
-            drawBridge(true);
+            drawBridge(director, projection, true, buffer);
 
-            drawElevatedSides();
+            drawElevatedSides(director, projection, buffer);
 
-            //if (!povFrontBack) drawBack();
+            //if (!povFrontBack) drawBack(director, projection, buffer);
 
-            drawBottom(true);
+            drawBottom(director, projection, true, buffer);
         }
         else {
-            //if (povFrontBack) drawBack();
+            //if (povFrontBack) drawBack(director, projection, buffer);
 
-            drawBridge(true);
-            drawTopCenter(true);
+            drawBridge(director, projection, true, buffer);
+            drawTopCenter(director, projection, true, buffer);
 
-            drawElevatedSides();
+            drawElevatedSides(director, projection, buffer);
 
-            drawSides(true);
+            drawSides(director, projection, true, buffer);
 
-            drawTopSides(true);
+            drawTopSides(director, projection, true, buffer);
 
-            //if (!povFrontBack) drawBack();
+            //if (!povFrontBack) drawBack(director, projection, buffer);
 
-            drawBottom(true);
+            drawBottom(director, projection, true, buffer);
         }
-
         //drawAxis(director, projection, buffer);
     }
 
     // ---------- Calculations ----------
-    private boolean[] calPov(int[] povCenter) {
-        System.out.println("dfasdf");
+    private boolean[] calPovCenter(int[] povCenter, int[] director, String projection, BufferedImage buffer) {
+        int xc = povCenter[0];
+        int yc = povCenter[1];
+        int zc = povCenter[2];
+
+        int[][] xyPlane = new int[][]{
+                new int[]{xc - 100, xc - 100, xc + 100, xc + 100},
+                new int[]{yc + 100, yc - 100, yc - 100, yc + 100},
+                new int[]{zc, zc, zc, zc},
+        };
+        rotatedXYPlane = rotateRespectObject(xyPlane, center, ends, angles)[0];
+
+        int[][] xzPlane = new int[][]{
+                new int[]{xc - 100, xc - 100, xc + 100, xc + 100},
+                new int[]{yc, yc, yc, yc},
+                new int[]{zc + 100, zc - 100, zc - 100, zc + 100},
+        };
+        rotatedXZPlane = rotateRespectObject(xzPlane, center, ends, angles)[0];
+
+        int[][] yzPlane = new int[][]{
+                new int[]{xc, xc, xc, xc},
+                new int[]{yc + 100, yc + 100, yc - 100, yc - 100},
+                new int[]{zc + 100, zc - 100, zc - 100, zc + 100},
+        };
+        rotatedYZPlane = rotateRespectObject(yzPlane, center, ends, angles)[0];
+
+        boolean povUp = backFaceCulling(rotatedXYPlane, null, director, projection, 1);
+        boolean povLeft = backFaceCulling(rotatedXZPlane, null, director, projection, 1);
+        boolean povFront = backFaceCulling(rotatedYZPlane, null, director, projection, 1);
+
+        return new boolean[]{povUp, povLeft, povFront};
+    }
+
+    private boolean[] calPovBack(int[] povCenter, int[] director, String projection, BufferedImage buffer) {
         int xc = povCenter[0];
         int yc = povCenter[1];
         int zc = povCenter[2];
@@ -412,7 +437,6 @@ public class Venator {
                 new int[]{zc, zc, zc, zc},
         };
         int[][] rotatedXYPlane = rotateRespectObject(xyPlane, center, ends, angles)[0];
-        drawSurface(rotatedXYPlane, director, projection, 0, false, Color.red, null, buffer);
 
         int[][] xzPlane = new int[][]{
                 new int[]{xc - 100, xc - 100, xc + 100, xc + 100},
@@ -587,7 +611,6 @@ public class Venator {
                 new int[]{zc + height, zc + height, zc + height, zc + height},
         };
         scaledRedRight5 = transform3D(redRight5, center, ends, scale, angles, new double[]{yInclination, -xTopInclination}, new int[][][]{topYAxis, topXRightAxis});
-
 
 
         // Flaps
@@ -1112,9 +1135,16 @@ public class Venator {
     }
 
 
+    public void drawPlanes(int[] director, String projection, BufferedImage buffer) {
+        drawSurface(rotatedXYPlane, director, projection, 0, false, Color.red, null, buffer);
+        drawSurface(rotatedXZPlane, director, projection, 0, false, Color.green, null, buffer);
+        drawSurface(rotatedYZPlane, director, projection, 0, false, Color.blue, null, buffer);
+
+    }
+
     // -------------------- Faces --------------------
     // ---------- Draw sections ----------
-    private void drawTopSides(boolean fill) {
+    private void drawTopSides(int[] director, String projection, boolean fill, BufferedImage buffer) {
         drawSurface(scaledTopLeft1, director, projection, 1, false, new Color(180, 180, 180), fill ? new Color(180, 180, 180) : null, buffer);
         drawSurface(scaledTopLeft2, director, projection, -1, false, new Color(180, 180, 180), fill ? new Color(180, 180, 180) : null, buffer);
         drawSurface(scaledTopLeftFlap, director, projection, 1, false, borderGray, fill ? new Color(162, 162, 162) : null, buffer);
@@ -1140,12 +1170,12 @@ public class Venator {
         drawSurface(backUp, director, projection, 1, false, borderGray, fill ? new Color(162, 159, 162) : null, buffer);
     }
 
-    private void drawTopCenter(boolean fill) {
+    private void drawTopCenter(int[] director, String projection, boolean fill, BufferedImage buffer) {
         drawSurface(scaledTopRed, director, projection, -1, false, new Color(120, 80, 80), fill ? new Color(143, 67, 76) : null, buffer);
         drawSurface(scaledTopWhite, director, projection, -1, false, borderGray, fill ? new Color(170, 170, 170) : null, buffer);
     }
 
-    private void drawElevatedSides() {
+    private void drawElevatedSides(int[] director, String projection, BufferedImage buffer) {
         drawSurface(topRedRight, director, projection, 1, false, new Color(120, 80, 80), new Color(116, 53, 60), buffer);
         drawSurface(topRedLeft, director, projection, 1, false, new Color(120, 80, 80), new Color(116, 53, 60), buffer);
         drawSurface(topRedFront, director, projection, 1, false, new Color(120, 80, 80), new Color(116, 53, 60), buffer);
@@ -1154,8 +1184,8 @@ public class Venator {
         drawSurface(topWhiteLeft, director, projection, -1, false, borderGray, new Color(160, 160, 160), buffer);
     }
 
-    private void drawBridge(boolean fill) {
-        if (!povUp) drawBridgeTowers(fill);
+    private void drawBridge(int[] director, String projection, boolean fill, BufferedImage buffer) {
+        if (!povUp) drawBridgeTowers(director, projection, fill, buffer);
         // Base
         ArrayList<Surface> surfaces = new ArrayList<>();
 
@@ -1178,14 +1208,15 @@ public class Venator {
 
         drawSortedSurfaces(surfaces, director, projection, buffer);
 
-        if (!povUp) drawSurface(scaledBridgeBase1Back, director, projection, 1, false, borderGray, fill ? new Color(178, 182, 183) : null, buffer);
+        if (!povUp)
+            drawSurface(scaledBridgeBase1Back, director, projection, 1, false, borderGray, fill ? new Color(178, 182, 183) : null, buffer);
 
-        if (povUp) drawBridgeTowers( fill);
+        if (povUp) drawBridgeTowers(director, projection, fill, buffer);
 
 
     }
 
-    private void drawBottom(boolean fill) {
+    private void drawBottom(int[] director, String projection, boolean fill, BufferedImage buffer) {
         //drawSurface(scaledBottomLeft, director, projection, -1, false, borderGray, fill ? new Color(180, 180, 180) : null, buffer);
         drawSurface(scaledBottomLeft1, director, projection, -1, false, null, fill ? new Color(180, 180, 180) : null, buffer);
         drawSurface(scaledBottomLeft2, director, projection, 1, false, null, fill ? new Color(180, 180, 180) : null, buffer);
@@ -1198,13 +1229,13 @@ public class Venator {
         drawSurface(scaledBottomRedLeft, director, projection, -1, false, new Color(116, 53, 60), fill ? new Color(116, 53, 60) : null, buffer);
         drawSurface(scaledBottomRedRight, director, projection, 1, false, new Color(116, 53, 60), fill ? new Color(116, 53, 60) : null, buffer);
 
-        if(!povUp) {
+        if (!povUp) {
             drawSurface(scaledBottomHangarLeft, director, projection, -1, false, Color.black, Color.black, buffer);
             drawSurface(scaledBottomHangarRight, director, projection, 1, false, Color.black, Color.black, buffer);
         }
     }
 
-    private void drawSides(boolean fill) {
+    private void drawSides(int[] director, String projection, boolean fill, BufferedImage buffer) {
         ArrayList<Surface> surfaces = new ArrayList<>();
 
         surfaces.add(new Surface(left1, -1, borderGray, fill ? new Color(100, 100, 100) : null));
@@ -1226,7 +1257,7 @@ public class Venator {
         drawSortedSurfaces(surfaces, director, projection, buffer);
     }
 
-    private void drawBack() {
+    private void drawBack(int[] director, String projection, BufferedImage buffer) {
         Color motor1Color = new Color(48, 47, 47);
         Color motor2Color = new Color(48, 48, 47);
         Color motor3Color = new Color(48, 47, 48);
@@ -1239,20 +1270,19 @@ public class Venator {
 
             drawSurface(scaledBridgeBase1LeftBack, director, projection, -1, false, borderGray, new Color(159, 161, 157), buffer);
             drawSurface(scaledBridgeBase1RightBack, director, projection, 1, false, borderGray, new Color(159, 162, 157), buffer);
-        }
-        else{
+        } else {
             drawSurface(scaledBottomLeftUp, director, projection, 1, false, borderGray, new Color(100, 99, 100), buffer);
             drawSurface(scaledBottomRightUp, director, projection, -1, false, borderGray, new Color(100, 99, 98), buffer);
         }
         if (povLeftBack) {
-            drawMotor(new int[]{xc + 288, yc + 80, zc - 5}, 18, 50, 18, motor1Color);
-            drawMotor(new int[]{xc + 288, yc + 40, zc - 12}, 17, 140, 18, motor2Color);
-            drawMotor(new int[]{xc + 288, yc + 35, zc + 15}, 10, 50, 10, motor3Color);
+            drawMotor(new int[]{xc + 288, yc + 80, zc - 5}, 18, 50, 18, director, projection, motor1Color, buffer);
+            drawMotor(new int[]{xc + 288, yc + 40, zc - 12}, 17, 140, 18, director, projection, motor2Color, buffer);
+            drawMotor(new int[]{xc + 288, yc + 35, zc + 15}, 10, 50, 10, director, projection, motor3Color, buffer);
 
         } else {
-            drawMotor(new int[]{xc + 288, yc - 80, zc - 5}, 18, 50, 18, motor4Color);
-            drawMotor(new int[]{xc + 288, yc - 40, zc - 12}, 17, 140, 18, motor5Color);
-            drawMotor(new int[]{xc + 288, yc - 35, zc + 15}, 10, 50, 10, motor6Color);
+            drawMotor(new int[]{xc + 288, yc - 80, zc - 5}, 18, 50, 18, director, projection, motor4Color, buffer);
+            drawMotor(new int[]{xc + 288, yc - 40, zc - 12}, 17, 140, 18, director, projection, motor5Color, buffer);
+            drawMotor(new int[]{xc + 288, yc - 35, zc + 15}, 10, 50, 10, director, projection, motor6Color, buffer);
         }
 
         int[][][] backCenter = new int[][][]{scaledBackCenter1, scaledBackCenter2};
@@ -1260,16 +1290,18 @@ public class Venator {
         drawSurface(backCenterTop, director, projection, 1, false, Color.gray, new Color(88, 88, 88), buffer);
 
         if (!povLeftBack) {
-            drawMotor(new int[]{xc + 288, yc + 35, zc + 15}, 10, 50, 10, motor3Color);
-            drawMotor(new int[]{xc + 288, yc + 40, zc - 12}, 17, 140, 18, motor2Color);
-            drawMotor(new int[]{xc + 288, yc + 80, zc - 5}, 18, 50, 18, motor1Color);
-            if(povUpBack) drawMotor(new int[]{xc + 288, yc + 35, zc + 15}, 10, 50, 10, motor3Color);
+            drawMotor(new int[]{xc + 288, yc + 35, zc + 15}, 10, 50, 10, director, projection, motor3Color, buffer);
+            drawMotor(new int[]{xc + 288, yc + 40, zc - 12}, 17, 140, 18, director, projection, motor2Color, buffer);
+            drawMotor(new int[]{xc + 288, yc + 80, zc - 5}, 18, 50, 18, director, projection, motor1Color, buffer);
+            if (povUpBack)
+                drawMotor(new int[]{xc + 288, yc + 35, zc + 15}, 10, 50, 10, director, projection, motor3Color, buffer);
 
         } else {
-            drawMotor(new int[]{xc + 288, yc - 35, zc + 15}, 10, 50, 10, motor6Color);
-            drawMotor(new int[]{xc + 288, yc - 40, zc - 12}, 17, 140, 18, motor5Color);
-            drawMotor(new int[]{xc + 288, yc - 80, zc - 5}, 18, 50, 18, motor4Color);
-            if(povUpBack) drawMotor(new int[]{xc + 288, yc - 35, zc + 15}, 10, 50, 10, motor3Color);
+            drawMotor(new int[]{xc + 288, yc - 35, zc + 15}, 10, 50, 10, director, projection, motor6Color, buffer);
+            drawMotor(new int[]{xc + 288, yc - 40, zc - 12}, 17, 140, 18, director, projection, motor5Color, buffer);
+            drawMotor(new int[]{xc + 288, yc - 80, zc - 5}, 18, 50, 18, director, projection, motor4Color, buffer);
+            if (povUpBack)
+                drawMotor(new int[]{xc + 288, yc - 35, zc + 15}, 10, 50, 10, director, projection, motor3Color, buffer);
 
         }
 
@@ -1278,8 +1310,7 @@ public class Venator {
 
             drawSurface(scaledBridgeBase1LeftBack, director, projection, -1, false, borderGray, new Color(159, 161, 157), buffer);
             drawSurface(scaledBridgeBase1RightBack, director, projection, 1, false, borderGray, new Color(159, 162, 157), buffer);
-        }
-        else {
+        } else {
             drawSurface(scaledBottomLeftUp, director, projection, 1, false, borderGray, new Color(100, 99, 100), buffer);
             drawSurface(scaledBottomRightUp, director, projection, -1, false, borderGray, new Color(100, 99, 98), buffer);
 
@@ -1287,9 +1318,9 @@ public class Venator {
     }
 
     // ---------- Draw components ----------
-    private void drawBridgeTowers(boolean fill) {
-        if (povLeft) drawBridgeTower("right", fill);
-        else drawBridgeTower("left", fill);
+    private void drawBridgeTowers(int[] director, String projection, boolean fill, BufferedImage buffer) {
+        if (povLeft) drawBridgeTower("right", director, projection, fill, buffer);
+        else drawBridgeTower("left", director, projection, fill, buffer);
 
         drawSurface(scaledBridgeBase1Top, director, projection, -1, false, null, fill ? new Color(170, 172, 171) : null, buffer);
         drawSurface(scaledBridgeBase2Top, director, projection, -1, false, borderGray, fill ? new Color(170, 172, 173) : null, buffer);
@@ -1297,11 +1328,11 @@ public class Venator {
         if (povUp)
             drawSurface(scaledBridgeBase1Back, director, projection, 1, false, borderGray, fill ? new Color(178, 182, 183) : null, buffer);
 
-        if (!povLeft) drawBridgeTower("right", fill );
-        else drawBridgeTower("left", fill );
+        if (!povLeft) drawBridgeTower("right", director, projection, fill, buffer);
+        else drawBridgeTower("left", director, projection, fill, buffer);
     }
 
-    private void drawBridgeTower(String side, boolean fill) {
+    private void drawBridgeTower(String side, int[] director, String projection, boolean fill, BufferedImage buffer) {
         if (side.equals("left")) {
             int[][][] leftBridge = new int[][][]{scaledBridgeLeft1, scaledBridgeLeft2, scaledBridgeLeft3};
 
@@ -1329,7 +1360,7 @@ public class Venator {
         }
     }
 
-    private void drawMotor(int[] p0, double radius, int length, int numSides, Color color) {
+    private void drawMotor(int[] p0, double radius, int length, int numSides, int[] director, String projection, Color color, BufferedImage buffer) {
         int x0 = p0[0];
 
         int[] zPoints = new int[numSides];
@@ -1354,7 +1385,7 @@ public class Venator {
         int[] x0Points = new int[numSides];
         int[] xfPoints = new int[numSides];
 
-        for(int i = 0; i < numSides; i++) {
+        for (int i = 0; i < numSides; i++) {
             x0Points[i] = x0;
             xfPoints[i] = x0 + length;
         }
@@ -1377,7 +1408,7 @@ public class Venator {
 
 
     // -------------------- Utils --------------------
-    /*private void drawAxis(int[] director, String projection) {
+    /*private void drawAxis(int[] director, String projection, BufferedImage buffer) {
         int[] xAxis1 = new int[]{xc, yc, zc};
         int[] xAxis2 = new int[]{x0, yc, zc};
 
