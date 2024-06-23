@@ -346,7 +346,7 @@ public class Transformations {
        return resultMatrix;
    }
 
-    public static int[][] rotateRespectObject(int[][] face, int[] center, double[] angles) {
+    /*public static int[][] rotateRespectObject(int[][] face, int[] center, double[] angles) {
         int xc = center[0];
         int yc = center[1];
         int zc = center[2];
@@ -376,9 +376,85 @@ public class Transformations {
 
         return rotatedZFace;
 
+    }*/
+
+    public static int[][][] rotateRespectObject(int[][] face, int[] center, int[][] ends, double[] angles) {
+        int xc = center[0];
+        int yc = center[1];
+        int zc = center[2];
+
+        int[] x0 = ends[0];
+        int[] y0 = ends[1];
+        int[] z0 = ends[2];
+
+        int[][] rotatedEnds = ends;
+        int[][] rotatedFace = face;
+
+
+
+        // ---------- Rotate around x axis ----------
+        if(angles[0] != 0) {
+            int[] xAxis1 = new int[]{xc, yc, zc};
+            int[] xAxis2 = new int[]{x0[0], x0[1], x0[2]};
+
+            rotatedFace = rotateAroundLine(face[0], face[1], face[2], xAxis1, xAxis2, angles[0]);
+
+            /*int[][] rotatedEnds2 = new int[][]{
+                    new int[]{rotatedEnds[0][0], rotatedEnds[1][0], rotatedEnds[2][0]},
+                    new int[]{rotatedEnds[0][1], rotatedEnds[1][1], rotatedEnds[2][1]},
+                    new int[]{rotatedEnds[0][2], rotatedEnds[1][2], rotatedEnds[2][2]},
+            };*/
+            rotatedEnds = rotateAroundLine(ends[0], ends[1], ends[2], xAxis1, xAxis2, angles[0]);
+        }
+
+        // ---------- Rotate around y axis ----------
+        if(angles[1] != 0) {
+            int[] yAxis1 = new int[]{xc, yc, zc};
+            int[] yAxis2 = new int[]{rotatedEnds[1][0], rotatedEnds[1][1], rotatedEnds[1][2]};
+
+            rotatedFace = rotateAroundLine(rotatedFace[0], rotatedFace[1], rotatedFace[2], yAxis1, yAxis2, angles[1]);
+            rotatedEnds = rotateAroundLine(rotatedEnds[0], rotatedEnds[1], rotatedEnds[2], yAxis1, yAxis2, angles[1]);
+        }
+
+
+        // ---------- Rotate around z axis ----------
+        if(angles[2] != 0) {
+            int[] zAxis1 = new int[]{xc, yc, zc};
+            int[] zAxis2 = new int[]{rotatedEnds[2][0], rotatedEnds[2][1], rotatedEnds[2][2]};
+
+            rotatedFace = rotateAroundLine(rotatedFace[0], rotatedFace[1], rotatedFace[2], zAxis1, zAxis2, angles[2]);
+            rotatedEnds = rotateAroundLine(rotatedEnds[0], rotatedEnds[1], rotatedEnds[2], zAxis1, zAxis2, angles[2]);
+        }
+
+        if(angles[1] == 0 && angles[2] == 0) rotatedEnds[0] = ends[0];
+        if(angles[0] == 0 && angles[2] == 0) rotatedEnds[1] = ends[1];
+        if(angles[0] == 0 && angles[1] == 0) rotatedEnds[2] = ends[2];
+
+        return new int[][][]{rotatedFace, rotatedEnds};
+
     }
 
-    public static int[][] transform3D(int[][] points, int[] center, double scale, double[] angles, double[] anglesAx, int[][][] axis) {
+    public static int[][] transform3D(int[][] points, int[] center, int[][] ends, double scale, double[] angles, double[] anglesAx, int[][][] axis) {
+        int[][] pointsRot = new int[points.length][points[0].length];
+
+        for (int i = 0; i < points.length; i++) {
+            pointsRot[i] = Arrays.copyOf(points[i], points[i].length);
+        }
+
+        if (anglesAx != null) {
+            for (int i = 0; i < anglesAx.length; i++) {
+                pointsRot = rotateAroundLine(pointsRot[0], pointsRot[1], pointsRot[2], axis[i][0], axis[i][1], anglesAx[i]);
+            }
+        }
+
+        int[][] rotatedPoints = rotateRespectObject(pointsRot, center, ends, angles)[0];
+        int[][] scaledPoints = scale3D(rotatedPoints[0], rotatedPoints[1], rotatedPoints[2], center[0], center[1], center[2], false, scale, scale, scale);
+
+        return scaledPoints;
+    }
+
+
+    /*public static int[][] transform3D(int[][] points, int[] center, double scale, double[] angles, double[] anglesAx, int[][][] axis) {
         int[][] pointsRot = new int[points.length][points[0].length];
 
         for (int i = 0; i < points.length; i++) {
@@ -396,4 +472,6 @@ public class Transformations {
 
         return scaledPoints;
     }
+*/
+
 }

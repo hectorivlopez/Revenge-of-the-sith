@@ -1,4 +1,5 @@
-package sandbox;
+package views;
+
 
 import utils.CustomThread;
 
@@ -37,8 +38,8 @@ public class Window3d extends JFrame implements ActionListener, MouseListener, M
         titleBarHeight = 28;
         if (isMacOS) titleBarHeight = 0;
 
-        width = 1000;
-        height = 501;
+        width = 1200;
+        height = 600;
 
         setSize(width, height + titleBarHeight + 40);
         setLocationRelativeTo(null);
@@ -79,7 +80,7 @@ public class Window3d extends JFrame implements ActionListener, MouseListener, M
     private void updateSize() {
         width = getWidth();
         height = getHeight() - titleBarHeight;
-        setBackground(new Color(39, 43, 76));
+        setBackground(new Color(10, 10, 10));
 
         bgPanel.setBounds(0, 0, width, height);
         if (!firstResize) {

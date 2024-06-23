@@ -25,6 +25,7 @@ public class Venator {
     public int[] z0;
 
     public int[][] ends;
+    public int[][] ends2;
 
     // ---------- Pov ----------
     public boolean povUp;
@@ -288,7 +289,19 @@ public class Venator {
         this.x0 = new int[]{xc + 500, yc, zc};
         this.y0 = new int[]{xc, yc + 500, zc};
         this.z0 = new int[]{xc, yc, zc + 500};
-        this.ends = new int[][]{x0, y0, z0};
+
+        this.ends = new int[][]{
+                new int[]{xc + 500, yc, zc},
+                new int[]{xc, yc + 500, zc},
+                new int[]{xc, yc, zc + 500},
+        };
+
+
+        this.ends2 = new int[][]{
+                new int[]{xc + 500, yc, zc},
+                new int[]{xc, yc + 500, zc},
+                new int[]{xc, yc, zc + 500},
+        };
 
         this.angles = new double[]{0, 0, 0};
         this.scale = 1;
@@ -322,11 +335,110 @@ public class Venator {
 
 
         this.ends = rotateRespectObject(cosa, center, ends, angles)[1];
-        this.x0 = ends[0];
-        this.y0 = ends[1];
-        this.z0 = ends[2];
+       /* this.ends2 = rotateRespectObject(cosa, center, ends2, angles)[1];
+
+        int[][] or = new int[][]{x0, y0, z0};
+
+        for (int i = 0; i < 3; i++) {
+            System.out.println(or[i][0] + ", " + or[i][1] + ", " + or[i][2]);
+        }
+
+        System.out.println("----");
+        for (int i = 0; i < 3; i++) {
+            System.out.println(ends2[i][0] + ", " + ends2[i][1] + ", " + ends2[i][2]);
+        }
+
+
+        double[] coco = calcularAngulosEuler(new int[][]{x0, y0, z0}, ends2);
+
+        System.out.println(coco[0] + ", " + coco[1] + ", " + coco[2]);
+        this.angles = coco;
+        update();*/
 
         this.angles = new double[]{0, 0, 0};
+    }
+
+    public static double[] calcularAngulosEuler(int[][] ejes, int[][] objeto) {
+        double[] angulos = new double[3];
+
+        // Normalizamos los vectores del objeto
+        double[] a = normalize(objeto[0]);
+        double[] b = normalize(objeto[1]);
+        double[] c = normalize(objeto[2]);
+
+        // Yaw (alrededor del eje Z)
+        angulos[0] = Math.atan2(b[0], a[0]);
+
+        // Pitch (alrededor del eje Y)
+        double sinPitch = -c[0];
+        double cosPitch = Math.sqrt(c[1] * c[1] + c[2] * c[2]);
+        angulos[1] = Math.atan2(sinPitch, cosPitch);
+
+        // Roll (alrededor del eje X)
+        double sinRoll = c[1];
+        double cosRoll = c[2];
+        angulos[2] = Math.atan2(sinRoll, cosRoll);
+
+        return angulos;
+    }
+
+    // Función para normalizar un vector
+    public static double[] normalize(int[] v) {
+        double magnitude = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+        return new double[]{v[0] / magnitude, v[1] / magnitude, v[2] / magnitude};
+    }
+
+    /*public static double[] calcularAngulos(int[][] ejes, int[][] objeto) {
+        double[] angulos = new double[3];
+
+        for (int i = 0; i < 3; i++) {
+            angulos[i] = calculateAngle(objeto[i], ejes[i]);
+        }
+
+        return angulos;
+    }*/
+
+    // Función para calcular el ángulo entre dos vectores
+    public static double calculateAngle(int[] v1, int[] v2) {
+        double dotProduct = dot(v1, v2);
+        double magnitudeV1 = magnitude(v1);
+        double magnitudeV2 = magnitude(v2);
+        return Math.acos(dotProduct / (magnitudeV1 * magnitudeV2));
+    }
+
+    // Función para calcular el producto punto
+    public static double dot(int[] v1, int[] v2) {
+        return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+    }
+
+    // Función para calcular la magnitud de un vector
+    public static double magnitude(int[] v) {
+        return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+    }
+
+
+    public int[] resultantVector(int[][] vectors) {
+        int[] vector = new int[3];
+
+        for (int i = 0; i < 3; i++) {
+            vector[i] = vectors[i][0];
+
+            for (int j = 1; j < vectors.length; j++) {
+                vector[i] += vectors[i][j];
+            }
+        }
+
+        return vector;
+    }
+
+    public int[] restVectors(int[] vector1, int[] vector2) {
+        int[] vector = new int[3];
+
+        for (int i = 0; i < 3; i++) {
+            vector[i] = vector1[i] - vector2[i];
+        }
+
+        return vector;
     }
 
     public synchronized void update() {
@@ -372,8 +484,7 @@ public class Venator {
             //if (!povFrontBack) drawBack(director, projection, buffer);
 
             drawBottom(director, projection, true, buffer);
-        }
-        else {
+        } else {
             //if (povFrontBack) drawBack(director, projection, buffer);
 
             drawBridge(director, projection, true, buffer);
@@ -389,7 +500,7 @@ public class Venator {
 
             drawBottom(director, projection, true, buffer);
         }
-        //drawAxis(director, projection, buffer);
+        drawAxis(director, projection, buffer);
     }
 
     // ---------- Calculations ----------
@@ -1408,8 +1519,8 @@ public class Venator {
 
 
     // -------------------- Utils --------------------
-    /*private void drawAxis(int[] director, String projection, BufferedImage buffer) {
-        int[] xAxis1 = new int[]{xc, yc, zc};
+    private void drawAxis(int[] director, String projection, BufferedImage buffer) {
+        /*int[] xAxis1 = new int[]{xc, yc, zc};
         int[] xAxis2 = new int[]{x0, yc, zc};
 
         int[][] axis = rotateAroundLine(new int[]{xc, x0, xc, xc}, new int[]{yc, yc, y0, yc}, new int[]{zc, zc, zc, z0}, xAxis1, xAxis2, angles[0]);
@@ -1428,7 +1539,22 @@ public class Venator {
         fillCircle(projectedAxis[0][0], projectedAxis[1][0], 3, Color.red, buffer);
         for (int i = 1; i < 4; i++) {
             drawLine(projectedAxis[0][0], projectedAxis[1][0], projectedAxis[0][i], projectedAxis[1][i], null, buffer);
-        }
-    }*/
+        }*/
+
+        int[][] coca = new int[][] {
+                new int[]{ends[0][0], ends[1][0], ends[2][0], 1} ,
+                new int[]{ends[0][1], ends[1][1], ends[2][1], 1}  ,
+                new int[]{ends[0][2], ends[1][2], ends[2][2], 1},
+        };
+
+        int[][] projectedEnds = projection(coca, director, projection);
+        int[][] projectedCenter = projection(new int[][]{new int[]{xc, 1, 1, 1}, new int[]{yc, 1, 1, 1}, new int[]{zc, 1, 1, 1}}, director, projection);
+
+        drawLine(projectedCenter[0][0], projectedCenter[1][0], projectedEnds[0][0], projectedEnds[1][0], Color.red, buffer);
+        drawLine(projectedCenter[0][0], projectedCenter[1][0], projectedEnds[0][1], projectedEnds[1][1], Color.green, buffer);
+        drawLine(projectedCenter[0][0], projectedCenter[1][0], projectedEnds[0][2], projectedEnds[1][2], Color.blue, buffer);
+
+
+    }
 
 }

@@ -1,12 +1,10 @@
-import graphics.Draw;
-import graphics.Transformations;
+package sandbox;
+
+import utils.CustomThread;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-
-import static graphics.Draw3d.*;
 
 public class Window3d extends JFrame implements ActionListener, MouseListener, MouseMotionListener {
     private int width;
@@ -39,7 +37,7 @@ public class Window3d extends JFrame implements ActionListener, MouseListener, M
         titleBarHeight = 28;
         if (isMacOS) titleBarHeight = 0;
 
-        width = 1200;
+        width = 1000;
         height = 501;
 
         setSize(width, height + titleBarHeight + 40);

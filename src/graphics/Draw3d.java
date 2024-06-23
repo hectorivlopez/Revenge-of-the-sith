@@ -6,6 +6,7 @@ import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import static graphics.Transformations.*;
 import static graphics.Draw.*;
@@ -322,7 +323,7 @@ public class Draw3d {
         }
     }
 
-    public static void drawPolyhedronFaces(int[][][] levels, int[] ignoreFaces, int direction, int[] director, String projection, Color borderColor, Color color, BufferedImage buffer) {
+    public static void drawPolyhedronFaces(int[][][] levels, int[] ignoreFaces, int direction, int[] director, String projection, Color borderColor, Color color/*, HashMap<Color, int[]> colors*/, BufferedImage buffer) {
         int numLevels = levels.length;
         int numVertices = levels[0][0].length;
 

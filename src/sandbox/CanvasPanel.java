@@ -1,9 +1,13 @@
+package sandbox;
+
 import graphics.Draw;
+import models.JediShip;
 import models.Venator;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import utils.CustomThread;
 
 import static graphics.Draw3d.projection;
 
@@ -20,6 +24,7 @@ public class CanvasPanel extends JPanel {
     public boolean growing;
     public boolean toRight;
     public Venator venator;
+    public JediShip jediShip;
 
     public CanvasPanel(int width, int height) {
         this.buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -70,7 +75,8 @@ public class CanvasPanel extends JPanel {
         }, 10, () -> false);
         moveThread.start();
 
-        this.venator = new Venator(600, 250, 500, 1, new double[]{0, 0, 0});
+       /* this.venator = new Venator(500, 250, 500, 1, new double[]{0, 0, 0});
+        this.jediShip = new JediShip(500, 250, 500, 1, new double[]{0, 0, 0});*/
     }
 
     public void resize(int width, int height) {
@@ -146,27 +152,14 @@ public class CanvasPanel extends JPanel {
         //venator.xc = x;
         //venator.yc = x;
         //venator.zc = x;
+        //venator.draw(director, "perspective", buffer, angle);
 
-        venator.draw(director, "perspective", buffer, angle);
+        /*jediShip.angles = new double[]{Math.PI / 2, 0, Math.PI / 2};
+        jediShip.draw(false, director, "oblique", buffer, angle);*/
 
 
 
         g.drawImage(buffer, 0, 0, this);
     }
 
-    public void cosa(int centerX, int centerY, int radius) {
-        int numSides = 8;
-
-        int[] xPoints = new int[numSides];
-        int[] yPoints = new int[numSides];
-        double angleStep = 2 * Math.PI / numSides; // Paso del ángulo en radianes
-
-        for (int i = 0; i < numSides; i++) {
-            double angle = i * angleStep;
-            xPoints[i] = (int) (centerX + radius * Math.cos(angle));
-            yPoints[i] = (int) (centerY + radius * Math.sin(angle));
-        }
-
-        Draw.drawPolygon(xPoints, yPoints, Color.green, buffer);
-    }
 }

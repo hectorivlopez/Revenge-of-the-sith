@@ -12,7 +12,7 @@ import static graphics.Draw3d.*;
 import static graphics.Transformations.*;
 
 public class JediShip {
-    public int xc;
+   /* public int xc;
     public int yc;
     public int zc;
 
@@ -35,6 +35,7 @@ public class JediShip {
     private double xInclination;
     int thickness;
     int zBottom;
+    int cabinSides;
 
 
     int[][] leftWingTop;
@@ -68,9 +69,10 @@ public class JediShip {
         this.leftAxis = new int[][]{new int[]{xc + 240, yc - 30, zc}, new int[]{xc - 10, yc - 30, zc},};
         this.rightAxis = new int[][]{new int[]{xc + 240, yc + 30, zc}, new int[]{xc - 10, yc + 30, zc},};
 
+        this.cabinSides = 16;
     }
 
-    public void draw(int[] director, String projection, BufferedImage buffer, double ang) {
+    public void draw(boolean perspective, int[] director, String projection, BufferedImage buffer, double ang) {
         this.ang = ang;
 
         calWings();
@@ -79,6 +81,111 @@ public class JediShip {
         povUp = povCenter[0];
         povLeft = povCenter[1];
         povFront = povCenter[2];
+
+        Color leftTopColor = Color.red;
+        Color rightTopColor = Color.green;
+        Color leftBottomColor = Color.pink;
+        Color rightBottomColor = Color.orange;
+
+        *//*drawCabinFront(director, projection, true, buffer);
+        drawCabinBack(director, projection, true, buffer);
+
+        drawLeftWingTop(director, projection, leftColor, buffer);
+        drawLeftWingTopBack(director, projection, leftColor, buffer);
+        drawRightWingTop(director, projection, rightColor, buffer);
+        drawRightWingTopBack(director, projection, rightColor, buffer);
+
+        drawLeftWingBottom(director, projection, leftColor, buffer);
+        drawLeftWingBottomBack(director, projection, leftColor, buffer);
+        drawRightWingBottom(director, projection, rightColor, buffer);
+        drawRightWingBottomBack(director, projection, rightColor, buffer);*//*
+
+        if (perspective) {
+            if (povUp) {
+                if (povFront) {
+                    if (povLeft) {
+                        drawSidesRight(director, projection, buffer);
+
+                        drawRightWingBottomBack(director, projection, rightBottomColor, buffer);
+                        drawRightWingBottom(director, projection, rightBottomColor, buffer);
+
+                        drawRightWingTopBack(director, projection, rightTopColor, buffer);
+                        drawRightWingTop(director, projection, rightTopColor, buffer);
+
+                        drawCabinBack(director, projection, true, buffer);
+                        drawCabinFront(director, projection, true, buffer);
+
+                        drawSidesLeft(director, projection, buffer);
+
+                        drawLeftWingBottomBack(director, projection, leftBottomColor, buffer);
+                        drawLeftWingBottom(director, projection, leftBottomColor, buffer);
+
+                        drawLeftWingTopBack(director, projection, leftTopColor, buffer);
+                        drawLeftWingTop(director, projection, leftTopColor, buffer);
+                    } else {
+                        drawSidesLeft(director, projection, buffer);
+
+                        drawLeftWingBottomBack(director, projection, leftBottomColor, buffer);
+                        drawLeftWingBottom(director, projection, leftBottomColor, buffer);
+
+                        drawLeftWingTopBack(director, projection, leftTopColor, buffer);
+                        drawLeftWingTop(director, projection, leftTopColor, buffer);
+
+                        drawCabinBack(director, projection, true, buffer);
+                        drawCabinFront(director, projection, true, buffer);
+
+                        drawSidesRight(director, projection, buffer);
+
+                        drawRightWingBottomBack(director, projection, rightBottomColor, buffer);
+                        drawRightWingBottom(director, projection, rightBottomColor, buffer);
+
+                        drawRightWingTopBack(director, projection, rightTopColor, buffer);
+                        drawRightWingTop(director, projection, rightTopColor, buffer);
+                    }
+                } else {
+                    if (povLeft) {
+
+                    } else {
+
+                    }
+                }
+
+            } else {
+                if (povFront) {
+                    if (povLeft) {
+
+                    } else {
+
+                    }
+                } else {
+                    if (povLeft) {
+
+                    } else {
+
+                    }
+                }
+            }
+        }
+        else {
+            drawSidesRight(director, projection, buffer);
+
+            drawRightWingBottomBack(director, projection, rightBottomColor, buffer);
+            drawRightWingBottom(director, projection, rightBottomColor, buffer);
+
+            drawRightWingTopBack(director, projection, rightTopColor, buffer);
+            drawRightWingTop(director, projection, rightTopColor, buffer);
+
+            drawCabinBack(director, projection, true, buffer);
+            drawCabinFront(director, projection, true, buffer);
+
+            drawSidesLeft(director, projection, buffer);
+
+            drawLeftWingBottomBack(director, projection, leftBottomColor, buffer);
+            drawLeftWingBottom(director, projection, leftBottomColor, buffer);
+
+            drawLeftWingTopBack(director, projection, leftTopColor, buffer);
+            drawLeftWingTop(director, projection, leftTopColor, buffer);
+        }
 
     }
 
@@ -119,7 +226,6 @@ public class JediShip {
     // ---------- Drawing ----------
     // Top
     public void drawLeftWingTop(int[] director, String projection, Color color, BufferedImage buffer) {
-
         int[][] top1 = new int[][]{
                 new int[]{leftWingTop[0][0], leftWingTop[0][1], leftWingTop[0][2], leftWingTop[0][3], leftWingTop[0][4], xc + 50,},
                 new int[]{leftWingTop[1][0], leftWingTop[1][1], leftWingTop[1][2], leftWingTop[1][3], leftWingTop[1][4], yc - 30},
@@ -134,57 +240,14 @@ public class JediShip {
         };
         int[][] scaledTop2 = transform3D(top2, center, scale, angles, new double[]{-xInclination}, new int[][][]{leftAxis});
 
-        int[][] top3 = new int[][]{
-                new int[]{leftWingTop[0][6], leftWingTop[0][7], leftWingTop[0][8], leftWingTop[0][9], leftWingTop[0][10], leftWingTop[0][11]},
-                new int[]{leftWingTop[1][6], leftWingTop[1][7], leftWingTop[1][8], leftWingTop[1][9], leftWingTop[1][10], leftWingTop[1][11]},
-                new int[]{zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc,}
-        };
-        int[][] scaledTop3 = transform3D(top3, center, scale, angles, new double[]{-xInclination}, new int[][][]{leftAxis});
-
-        // Bottom
-
-        int[][] bottom1 = new int[][]{
-                new int[]{leftWingBottom[0][0], leftWingBottom[0][1], leftWingBottom[0][2], leftWingBottom[0][3], leftWingBottom[0][4], xc + 50,},
-                new int[]{leftWingBottom[1][0], leftWingBottom[1][1], leftWingBottom[1][2], leftWingBottom[1][3], leftWingBottom[1][4], yc - 30},
-                new int[]{zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom,}
-        };
-        int[][] scaledBottom1 = transform3D(bottom1, center, scale, angles, new double[]{-xInclination}, new int[][][]{leftAxis});
-
-        int[][] bottom2 = new int[][]{
-                new int[]{leftWingBottom[0][5], leftWingBottom[0][6], leftWingBottom[0][11], leftWingBottom[0][12], leftWingBottom[0][13], xc + 50,},
-                new int[]{leftWingBottom[1][5], leftWingBottom[1][6], leftWingBottom[1][11], leftWingBottom[1][12], leftWingBottom[1][13], yc - 30,},
-                new int[]{zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom,}
-        };
-        int[][] scaledBottom2 = transform3D(bottom2, center, scale, angles, new double[]{-xInclination}, new int[][][]{leftAxis});
-
-        int[][] bottom3 = new int[][]{
-                new int[]{leftWingBottom[0][6], leftWingBottom[0][7], leftWingBottom[0][8], leftWingBottom[0][9], leftWingBottom[0][10], leftWingBottom[0][11]},
-                new int[]{leftWingBottom[1][6], leftWingBottom[1][7], leftWingBottom[1][8], leftWingBottom[1][9], leftWingBottom[1][10], leftWingBottom[1][11]},
-                new int[]{zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom,}
-        };
-        int[][] scaledBottom3 = transform3D(bottom3, center, scale, angles, new double[]{-xInclination}, new int[][][]{leftAxis});
-
-        int[][][] leftFaces = new int[][][]{scaledLeftWingTop, scaledLeftWingBottom};
-        //drawPolyhedronFaces(leftFaces, null, -1, director, projection, Color.white, Color.red, buffer);
-
         // --------------- Drawing ---------------
-        drawWingSides(scaledLeftWingTop, scaledLeftWingBottom, 1, director, projection, buffer);
-
         drawSurface(scaledTop1, director, projection, -1, false, null, color, buffer);
         drawSurface(scaledTop2, director, projection, -1, false, null, color, buffer);
         //drawSurface(scaledTop3, director, projection, -1, false, null, color, buffer);
-
-        drawSurface(scaledBottom1, director, projection, 1, false, null, color, buffer);
-        drawSurface(scaledBottom2, director, projection, 1, false, null, color, buffer);
-        //drawSurface(scaledBottom3, director, projection, 1, false, null, color, buffer);
-
     }
 
     public void drawRightWingTop(int[] director, String projection, Color color, BufferedImage buffer) {
-        int zBottom = zc - thickness;
-
         // Top
-
         int[][] top1 = new int[][]{
                 new int[]{rightWingTop[0][0], rightWingTop[0][1], rightWingTop[0][2], rightWingTop[0][3], rightWingTop[0][4], xc + 50,},
                 new int[]{rightWingTop[1][0], rightWingTop[1][1], rightWingTop[1][2], rightWingTop[1][3], rightWingTop[1][4], yc + 30},
@@ -199,51 +262,11 @@ public class JediShip {
         };
         int[][] scaledTop2 = transform3D(top2, center, scale, angles, new double[]{xInclination}, new int[][][]{rightAxis});
 
-        int[][] top3 = new int[][]{
-                new int[]{rightWingTop[0][6], rightWingTop[0][7], rightWingTop[0][8], rightWingTop[0][9], rightWingTop[0][10], rightWingTop[0][11]},
-                new int[]{rightWingTop[1][6], rightWingTop[1][7], rightWingTop[1][8], rightWingTop[1][9], rightWingTop[1][10], rightWingTop[1][11]},
-                new int[]{zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc,}
-        };
-        int[][] scaledTop3 = transform3D(top3, center, scale, angles, new double[]{xInclination}, new int[][][]{rightAxis});
-
-        // Bottom
-        int[][] bottom1 = new int[][]{
-                new int[]{rightWingBottom[0][0], rightWingBottom[0][1], rightWingBottom[0][2], rightWingBottom[0][3], rightWingBottom[0][4], xc + 50,},
-                new int[]{rightWingBottom[1][0], rightWingBottom[1][1], rightWingBottom[1][2], rightWingBottom[1][3], rightWingBottom[1][4], yc + 30},
-                new int[]{zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom,}
-        };
-        int[][] scaledBottom1 = transform3D(bottom1, center, scale, angles, new double[]{xInclination}, new int[][][]{rightAxis});
-
-        int[][] bottom2 = new int[][]{
-                new int[]{rightWingBottom[0][5], rightWingBottom[0][6], rightWingBottom[0][11], rightWingBottom[0][12], rightWingBottom[0][13], xc + 50,},
-                new int[]{rightWingBottom[1][5], rightWingBottom[1][6], rightWingBottom[1][11], rightWingBottom[1][12], rightWingBottom[1][13], yc + 30,},
-                new int[]{zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom,}
-        };
-        int[][] scaledBottom2 = transform3D(bottom2, center, scale, angles, new double[]{xInclination}, new int[][][]{rightAxis});
-
-        int[][] bottom3 = new int[][]{
-                new int[]{rightWingBottom[0][6], rightWingBottom[0][7], rightWingBottom[0][8], rightWingBottom[0][9], rightWingBottom[0][10], rightWingBottom[0][11]},
-                new int[]{rightWingBottom[1][6], rightWingBottom[1][7], rightWingBottom[1][8], rightWingBottom[1][9], rightWingBottom[1][10], rightWingBottom[1][11]},
-                new int[]{zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom,}
-        };
-        int[][] scaledBottom3 = transform3D(bottom3, center, scale, angles, new double[]{xInclination}, new int[][][]{rightAxis});
-
-        int[][][] leftFaces = new int[][][]{scaledRightWingTop, scaledRightWingBottom};
-        //drawPolyhedronFaces(leftFaces, null, -1, director, projection, Color.white, Color.red, buffer);
-
         // --------------- Drawing ---------------
-        drawWingSides(scaledRightWingTop, scaledRightWingBottom, -1, director, projection, buffer);
-
-        drawSurface(scaledTop1, director, projection, 1, false, Color.black, color, buffer);
-        drawSurface(scaledTop2, director, projection, 1, false, Color.black, color, buffer);
-       // drawSurface(scaledTop3, director, projection, 1, false, Color.black, color, buffer);
-
-        drawSurface(scaledBottom1, director, projection, -1, false, Color.black, color, buffer);
-        drawSurface(scaledBottom2, director, projection, -1, false, Color.black, color, buffer);
-       // drawSurface(scaledBottom3, director, projection, -1, false, Color.black, color, buffer);
-
+        drawSurface(scaledTop1, director, projection, 1, false, null, color, buffer);
+        drawSurface(scaledTop2, director, projection, 1, false, null, color, buffer);
+        // drawSurface(scaledTop3, director, projection, 1, false, Color.black, color, buffer);
     }
-
 
     public void drawLeftWingTopBack(int[] director, String projection, Color color, BufferedImage buffer) {
         int[][] top3 = new int[][]{
@@ -253,22 +276,12 @@ public class JediShip {
         };
         int[][] scaledTop3 = transform3D(top3, center, scale, angles, new double[]{-xInclination}, new int[][][]{leftAxis});
 
-        // Bottom
-        int[][] bottom3 = new int[][]{
-                new int[]{leftWingBottom[0][6], leftWingBottom[0][7], leftWingBottom[0][8], leftWingBottom[0][9], leftWingBottom[0][10], leftWingBottom[0][11]},
-                new int[]{leftWingBottom[1][6], leftWingBottom[1][7], leftWingBottom[1][8], leftWingBottom[1][9], leftWingBottom[1][10], leftWingBottom[1][11]},
-                new int[]{zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom,}
-        };
-        int[][] scaledBottom3 = transform3D(bottom3, center, scale, angles, new double[]{-xInclination}, new int[][][]{leftAxis});
-
         // --------------- Drawing ---------------
         drawSurface(scaledTop3, director, projection, -1, false, null, color, buffer);
-        drawSurface(scaledBottom3, director, projection, 1, false, null, color, buffer);
+
     }
 
     public void drawRightWingTopBack(int[] director, String projection, Color color, BufferedImage buffer) {
-        int zBottom = zc - thickness;
-
         // Top
         int[][] top3 = new int[][]{
                 new int[]{rightWingTop[0][6], rightWingTop[0][7], rightWingTop[0][8], rightWingTop[0][9], rightWingTop[0][10], rightWingTop[0][11]},
@@ -277,45 +290,13 @@ public class JediShip {
         };
         int[][] scaledTop3 = transform3D(top3, center, scale, angles, new double[]{xInclination}, new int[][][]{rightAxis});
 
-        // Bottom
-        int[][] bottom3 = new int[][]{
-                new int[]{rightWingBottom[0][6], rightWingBottom[0][7], rightWingBottom[0][8], rightWingBottom[0][9], rightWingBottom[0][10], rightWingBottom[0][11]},
-                new int[]{rightWingBottom[1][6], rightWingBottom[1][7], rightWingBottom[1][8], rightWingBottom[1][9], rightWingBottom[1][10], rightWingBottom[1][11]},
-                new int[]{zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom,}
-        };
-        int[][] scaledBottom3 = transform3D(bottom3, center, scale, angles, new double[]{xInclination}, new int[][][]{rightAxis});
-
         // --------------- Drawing ---------------
-         drawSurface(scaledTop3, director, projection, 1, false, Color.black, color, buffer);
-         drawSurface(scaledBottom3, director, projection, -1, false, Color.black, color, buffer);
+        drawSurface(scaledTop3, director, projection, 1, false, null, color, buffer);
     }
 
     // Bottom
     public void drawLeftWingBottom(int[] director, String projection, Color color, BufferedImage buffer) {
-
-        int[][] top1 = new int[][]{
-                new int[]{leftWingTop[0][0], leftWingTop[0][1], leftWingTop[0][2], leftWingTop[0][3], leftWingTop[0][4], xc + 50,},
-                new int[]{leftWingTop[1][0], leftWingTop[1][1], leftWingTop[1][2], leftWingTop[1][3], leftWingTop[1][4], yc - 30},
-                new int[]{zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc,}
-        };
-        int[][] scaledTop1 = transform3D(top1, center, scale, angles, new double[]{-xInclination}, new int[][][]{leftAxis});
-
-        int[][] top2 = new int[][]{
-                new int[]{leftWingTop[0][5], leftWingTop[0][6], leftWingTop[0][11], leftWingTop[0][12], leftWingTop[0][13], xc + 50,},
-                new int[]{leftWingTop[1][5], leftWingTop[1][6], leftWingTop[1][11], leftWingTop[1][12], leftWingTop[1][13], yc - 30,},
-                new int[]{zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc,}
-        };
-        int[][] scaledTop2 = transform3D(top2, center, scale, angles, new double[]{-xInclination}, new int[][][]{leftAxis});
-
-        int[][] top3 = new int[][]{
-                new int[]{leftWingTop[0][6], leftWingTop[0][7], leftWingTop[0][8], leftWingTop[0][9], leftWingTop[0][10], leftWingTop[0][11]},
-                new int[]{leftWingTop[1][6], leftWingTop[1][7], leftWingTop[1][8], leftWingTop[1][9], leftWingTop[1][10], leftWingTop[1][11]},
-                new int[]{zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc,}
-        };
-        int[][] scaledTop3 = transform3D(top3, center, scale, angles, new double[]{-xInclination}, new int[][][]{leftAxis});
-
         // Bottom
-
         int[][] bottom1 = new int[][]{
                 new int[]{leftWingBottom[0][0], leftWingBottom[0][1], leftWingBottom[0][2], leftWingBottom[0][3], leftWingBottom[0][4], xc + 50,},
                 new int[]{leftWingBottom[1][0], leftWingBottom[1][1], leftWingBottom[1][2], leftWingBottom[1][3], leftWingBottom[1][4], yc - 30},
@@ -330,55 +311,13 @@ public class JediShip {
         };
         int[][] scaledBottom2 = transform3D(bottom2, center, scale, angles, new double[]{-xInclination}, new int[][][]{leftAxis});
 
-        int[][] bottom3 = new int[][]{
-                new int[]{leftWingBottom[0][6], leftWingBottom[0][7], leftWingBottom[0][8], leftWingBottom[0][9], leftWingBottom[0][10], leftWingBottom[0][11]},
-                new int[]{leftWingBottom[1][6], leftWingBottom[1][7], leftWingBottom[1][8], leftWingBottom[1][9], leftWingBottom[1][10], leftWingBottom[1][11]},
-                new int[]{zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom,}
-        };
-        int[][] scaledBottom3 = transform3D(bottom3, center, scale, angles, new double[]{-xInclination}, new int[][][]{leftAxis});
-
-        int[][][] leftFaces = new int[][][]{scaledLeftWingTop, scaledLeftWingBottom};
-        //drawPolyhedronFaces(leftFaces, null, -1, director, projection, Color.white, Color.red, buffer);
-
         // --------------- Drawing ---------------
-        drawWingSides(scaledLeftWingTop, scaledLeftWingBottom, 1, director, projection, buffer);
-
-        drawSurface(scaledTop1, director, projection, -1, false, null, color, buffer);
-        drawSurface(scaledTop2, director, projection, -1, false, null, color, buffer);
-        //drawSurface(scaledTop3, director, projection, -1, false, null, color, buffer);
-
         drawSurface(scaledBottom1, director, projection, 1, false, null, color, buffer);
         drawSurface(scaledBottom2, director, projection, 1, false, null, color, buffer);
         //drawSurface(scaledBottom3, director, projection, 1, false, null, color, buffer);
-
     }
 
     public void drawRightWingBottom(int[] director, String projection, Color color, BufferedImage buffer) {
-        int zBottom = zc - thickness;
-
-        // Top
-
-        int[][] top1 = new int[][]{
-                new int[]{rightWingTop[0][0], rightWingTop[0][1], rightWingTop[0][2], rightWingTop[0][3], rightWingTop[0][4], xc + 50,},
-                new int[]{rightWingTop[1][0], rightWingTop[1][1], rightWingTop[1][2], rightWingTop[1][3], rightWingTop[1][4], yc + 30},
-                new int[]{zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc,}
-        };
-        int[][] scaledTop1 = transform3D(top1, center, scale, angles, new double[]{xInclination}, new int[][][]{rightAxis});
-
-        int[][] top2 = new int[][]{
-                new int[]{rightWingTop[0][5], rightWingTop[0][6], rightWingTop[0][11], rightWingTop[0][12], rightWingTop[0][13], xc + 50,},
-                new int[]{rightWingTop[1][5], rightWingTop[1][6], rightWingTop[1][11], rightWingTop[1][12], rightWingTop[1][13], yc + 30,},
-                new int[]{zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc,}
-        };
-        int[][] scaledTop2 = transform3D(top2, center, scale, angles, new double[]{xInclination}, new int[][][]{rightAxis});
-
-        int[][] top3 = new int[][]{
-                new int[]{rightWingTop[0][6], rightWingTop[0][7], rightWingTop[0][8], rightWingTop[0][9], rightWingTop[0][10], rightWingTop[0][11]},
-                new int[]{rightWingTop[1][6], rightWingTop[1][7], rightWingTop[1][8], rightWingTop[1][9], rightWingTop[1][10], rightWingTop[1][11]},
-                new int[]{zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc,}
-        };
-        int[][] scaledTop3 = transform3D(top3, center, scale, angles, new double[]{xInclination}, new int[][][]{rightAxis});
-
         // Bottom
         int[][] bottom1 = new int[][]{
                 new int[]{rightWingBottom[0][0], rightWingBottom[0][1], rightWingBottom[0][2], rightWingBottom[0][3], rightWingBottom[0][4], xc + 50,},
@@ -394,38 +333,15 @@ public class JediShip {
         };
         int[][] scaledBottom2 = transform3D(bottom2, center, scale, angles, new double[]{xInclination}, new int[][][]{rightAxis});
 
-        int[][] bottom3 = new int[][]{
-                new int[]{rightWingBottom[0][6], rightWingBottom[0][7], rightWingBottom[0][8], rightWingBottom[0][9], rightWingBottom[0][10], rightWingBottom[0][11]},
-                new int[]{rightWingBottom[1][6], rightWingBottom[1][7], rightWingBottom[1][8], rightWingBottom[1][9], rightWingBottom[1][10], rightWingBottom[1][11]},
-                new int[]{zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom, zBottom,}
-        };
-        int[][] scaledBottom3 = transform3D(bottom3, center, scale, angles, new double[]{xInclination}, new int[][][]{rightAxis});
-
-        int[][][] leftFaces = new int[][][]{scaledRightWingTop, scaledRightWingBottom};
-        //drawPolyhedronFaces(leftFaces, null, -1, director, projection, Color.white, Color.red, buffer);
-
         // --------------- Drawing ---------------
-        drawWingSides(scaledRightWingTop, scaledRightWingBottom, -1, director, projection, buffer);
 
-        drawSurface(scaledTop1, director, projection, 1, false, Color.black, color, buffer);
-        drawSurface(scaledTop2, director, projection, 1, false, Color.black, color, buffer);
-        // drawSurface(scaledTop3, director, projection, 1, false, Color.black, color, buffer);
-
-        drawSurface(scaledBottom1, director, projection, -1, false, Color.black, color, buffer);
-        drawSurface(scaledBottom2, director, projection, -1, false, Color.black, color, buffer);
+        drawSurface(scaledBottom1, director, projection, -1, false, null, color, buffer);
+        drawSurface(scaledBottom2, director, projection, -1, false, null, color, buffer);
         // drawSurface(scaledBottom3, director, projection, -1, false, Color.black, color, buffer);
 
     }
 
-
     public void drawLeftWingBottomBack(int[] director, String projection, Color color, BufferedImage buffer) {
-        int[][] top3 = new int[][]{
-                new int[]{leftWingTop[0][6], leftWingTop[0][7], leftWingTop[0][8], leftWingTop[0][9], leftWingTop[0][10], leftWingTop[0][11]},
-                new int[]{leftWingTop[1][6], leftWingTop[1][7], leftWingTop[1][8], leftWingTop[1][9], leftWingTop[1][10], leftWingTop[1][11]},
-                new int[]{zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc,}
-        };
-        int[][] scaledTop3 = transform3D(top3, center, scale, angles, new double[]{-xInclination}, new int[][][]{leftAxis});
-
         // Bottom
         int[][] bottom3 = new int[][]{
                 new int[]{leftWingBottom[0][6], leftWingBottom[0][7], leftWingBottom[0][8], leftWingBottom[0][9], leftWingBottom[0][10], leftWingBottom[0][11]},
@@ -435,21 +351,10 @@ public class JediShip {
         int[][] scaledBottom3 = transform3D(bottom3, center, scale, angles, new double[]{-xInclination}, new int[][][]{leftAxis});
 
         // --------------- Drawing ---------------
-        drawSurface(scaledTop3, director, projection, -1, false, null, color, buffer);
         drawSurface(scaledBottom3, director, projection, 1, false, null, color, buffer);
     }
 
     public void drawRightWingBottomBack(int[] director, String projection, Color color, BufferedImage buffer) {
-        int zBottom = zc - thickness;
-
-        // Top
-        int[][] top3 = new int[][]{
-                new int[]{rightWingTop[0][6], rightWingTop[0][7], rightWingTop[0][8], rightWingTop[0][9], rightWingTop[0][10], rightWingTop[0][11]},
-                new int[]{rightWingTop[1][6], rightWingTop[1][7], rightWingTop[1][8], rightWingTop[1][9], rightWingTop[1][10], rightWingTop[1][11]},
-                new int[]{zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc, zc,}
-        };
-        int[][] scaledTop3 = transform3D(top3, center, scale, angles, new double[]{xInclination}, new int[][][]{rightAxis});
-
         // Bottom
         int[][] bottom3 = new int[][]{
                 new int[]{rightWingBottom[0][6], rightWingBottom[0][7], rightWingBottom[0][8], rightWingBottom[0][9], rightWingBottom[0][10], rightWingBottom[0][11]},
@@ -459,15 +364,22 @@ public class JediShip {
         int[][] scaledBottom3 = transform3D(bottom3, center, scale, angles, new double[]{xInclination}, new int[][][]{rightAxis});
 
         // --------------- Drawing ---------------
-        drawSurface(scaledTop3, director, projection, 1, false, Color.black, color, buffer);
-        drawSurface(scaledBottom3, director, projection, -1, false, Color.black, color, buffer);
+        drawSurface(scaledBottom3, director, projection, -1, false, null, color, buffer);
+    }
+
+    // Sides
+    public void drawSidesLeft(int[] director, String projection, BufferedImage buffer) {
+        drawWingSides(scaledLeftWingTop, scaledLeftWingBottom, 1, director, projection, Color.black, buffer);
+    }
+
+    public void drawSidesRight(int[] director, String projection, BufferedImage buffer) {
+        drawWingSides(scaledRightWingTop, scaledRightWingBottom, -1, director, projection, new Color(0, 1, 0), buffer);
     }
 
 
-
-    public void drawWingSides(int[][] top, int[][] bottom, int direction, int[] director, String projection, BufferedImage buffer) {
+    public void drawWingSides(int[][] top, int[][] bottom, int direction, int[] director, String projection, Color sideColor, BufferedImage buffer) {
         ArrayList<Surface> surfaces = new ArrayList<>();
-        Color sideColor = Color.black;
+
 
         for (int i = 0; i < 9; i++) {
             int[][] side = new int[3][4];
@@ -490,7 +402,7 @@ public class JediShip {
     }
 
     public void drawCabinFront(int[] director, String projection, boolean fill, BufferedImage buffer) {
-        int numSides = 16;
+        int numSides = cabinSides;
         double angleStep = 2 * Math.PI / numSides; // Paso del ángulo en radianes
 
         int[] z0Points = new int[numSides];
@@ -545,21 +457,21 @@ public class JediShip {
         int[][] transformedFace3 = transform3D(face3, center, scale, angles, null, null);
 
 
-       /* drawSurface(transformedFace0, director, projection, -1, false, Color.red, null, buffer);
+       *//* drawSurface(transformedFace0, director, projection, -1, false, Color.red, null, buffer);
         drawSurface(transformedFace1, director, projection, -1, false, Color.red, null, buffer);
         drawSurface(transformedFace2, director, projection, -1, false, Color.red, null, buffer);
         drawSurface(transformedFace3, director, projection, -1, false, Color.red, null, buffer);
         drawSurface(transformedFace4, director, projection, -1, false, Color.red, null, buffer);
         drawSurface(transformedFace5, director, projection, -1, false, Color.red, null, buffer);
-*/
-        int[][][] levels = new int[][][]{transformedFace0, transformedFace1, transformedFace2, transformedFace3, };
+*//*
+        int[][][] levels = new int[][][]{transformedFace0, transformedFace1, transformedFace2, transformedFace3,};
         drawPolyhedronFaces(levels, new int[]{1}, 1, director, projection, Color.white, Color.blue, buffer);
 
 
     }
 
     public void drawCabinBack(int[] director, String projection, boolean fill, BufferedImage buffer) {
-        int numSides = 16;
+        int numSides = cabinSides;
         double angleStep = 2 * Math.PI / numSides; // Paso del ángulo en radianes
 
         int[] z3Points = new int[numSides];
@@ -603,15 +515,15 @@ public class JediShip {
         int[][] transformedFace4 = transform3D(face4, center, scale, angles, null, null);
         int[][] transformedFace5 = transform3D(face5, center, scale, angles, null, null);
 
-       /* drawSurface(transformedFace0, director, projection, -1, false, Color.red, null, buffer);
+       *//* drawSurface(transformedFace0, director, projection, -1, false, Color.red, null, buffer);
         drawSurface(transformedFace1, director, projection, -1, false, Color.red, null, buffer);
         drawSurface(transformedFace2, director, projection, -1, false, Color.red, null, buffer);
         drawSurface(transformedFace3, director, projection, -1, false, Color.red, null, buffer);
         drawSurface(transformedFace4, director, projection, -1, false, Color.red, null, buffer);
         drawSurface(transformedFace5, director, projection, -1, false, Color.red, null, buffer);
-*/
+*//*
         int[][][] levels = new int[][][]{transformedFace3, transformedFace4, transformedFace5};
-        drawPolyhedronFaces(levels, null, 1, director, projection, Color.white, Color.blue, buffer);
+        drawPolyhedronFaces(levels, null, 1, director, projection, Color.white, Color.cyan, buffer);
 
 
     }
@@ -653,7 +565,7 @@ public class JediShip {
         boolean povLeft = backFaceCulling(rotatedXZPlane, null, director, projection, 1);
         boolean povFront = backFaceCulling(rotatedYZPlane, null, director, projection, 1);
 
-        return new boolean[]{povUp, !povLeft, !povFront};
-    }
+        return new boolean[]{povUp, povLeft, !povFront};
+    }*/
 
 }

@@ -1,3 +1,5 @@
+package utils;
+
 import java.util.function.Supplier;
 
 public class CustomThread extends Thread {
