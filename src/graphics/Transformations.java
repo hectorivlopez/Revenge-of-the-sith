@@ -401,6 +401,11 @@ public class Transformations {
         // Calcular los ángulos de Euler
         double[] angles = getEulerAngles(R);
 
+        for(int i = 0; i < 3; i++) {
+            while(angles[i] < 0) angles[i] += 2 * Math.PI;
+            while(angles[i] >= 2 * Math.PI) angles[i] -= 2 * Math.PI;
+        }
+
         return angles;
     }
 

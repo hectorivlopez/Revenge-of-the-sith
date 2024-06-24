@@ -188,6 +188,25 @@ public class JediShip {
         update();
     }
 
+    public synchronized void move(int dx, int dy, int dz) {
+
+        for(int i = 0; i < 3; i++) {
+            ends[i][0] += dx;
+            ends[i][1] += dy;
+            ends[i][2] += dz;
+
+            ends2[i][0] += dx;
+            ends2[i][1] += dy;
+            ends2[i][2] += dz;
+        }
+
+        update();
+
+        this.xc = this.xc + dx;
+        this.yc = this.yc + dy;
+        this.zc = this.zc + dz;
+    }
+
 
     // ------------------------------ Calculations ------------------------------
     private boolean[] calPovCenter(int[] povCenter, int[] director, String projection) {
@@ -542,7 +561,7 @@ public class JediShip {
 
 
       // ------------------------------ Drawing ------------------------------
-    public void draw(boolean perspective, int[] director, String projection, boolean develop, BufferedImage buffer, double ang) {
+    public synchronized void draw(boolean perspective, int[] director, String projection, boolean develop, BufferedImage buffer, double ang) {
         this.ang = ang;
 
         int r = shipColor.getRed();
@@ -558,6 +577,8 @@ public class JediShip {
         povUp = povCenter[0];
         povLeft = povCenter[1];
         povFront = povCenter[2];
+
+        update();
 
         /*drawCabinFront(director, projection, true, buffer);
         drawCabinBack(director, projection, true, buffer);

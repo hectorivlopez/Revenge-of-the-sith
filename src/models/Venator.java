@@ -324,6 +324,25 @@ public class Venator {
         update();
     }
 
+    public synchronized void move(int dx, int dy, int dz) {
+
+        for(int i = 0; i < 3; i++) {
+            ends[i][0] += dx;
+            ends[i][1] += dy;
+            ends[i][2] += dz;
+
+            ends2[i][0] += dx;
+            ends2[i][1] += dy;
+            ends2[i][2] += dz;
+        }
+
+        update();
+
+        this.xc = this.xc + dx;
+        this.yc = this.yc + dy;
+        this.zc = this.zc + dz;
+    }
+
 
     public synchronized void rotate(double[] angles) {
         int[][] cosa = new int[][]{
@@ -367,6 +386,8 @@ public class Venator {
 
     public synchronized void draw(int[] director, String projection, boolean develop, BufferedImage buffer, double ang) {
         this.ang = ang;
+
+        update();
 
         if (povUp) {
             if (povFrontBack) drawBack(director, projection, buffer);
