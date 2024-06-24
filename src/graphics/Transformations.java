@@ -353,7 +353,7 @@ public class Transformations {
         return intResultMatrix;
    }
 
-    /*public static int[][] rotateRespectObject(int[][] face, int[] center, double[] angles) {
+    public static int[][] rotateRespectAxis(int[][] face, int[] center, double[] angles) {
         int xc = center[0];
         int yc = center[1];
         int zc = center[2];
@@ -374,7 +374,7 @@ public class Transformations {
 
         int[][] rotatedYFace = rotateAroundLine(rotatedXFace[0], rotatedXFace[1], rotatedXFace[2], yAxis1, yAxis2, angles[1]);
 
-        p0 = rotateAroundLine(p0[0], p0[1], p0[2], xAxis1, xAxis2, angles[1]);
+        p0 = rotateAroundLine(p0[0], p0[1], p0[2], yAxis1, yAxis2, angles[1]);
 
         int[] zAxis1 = new int[]{xc, yc, zc};
         int[] zAxis2 = new int[]{p0[0][2], p0[1][2], p0[2][2]};
@@ -383,11 +383,99 @@ public class Transformations {
 
         return rotatedZFace;
 
-    }*/
+    }
 
+    public static double[] getEulerAngles(double[] v1, double[] v2, double[] v3) {
+        // Normalizar los vectores
+        double[] n1 = normalize(v1);
+        double[] n2 = normalize(v2);
+        double[] n3 = normalize(v3);
 
+        // Construir la matriz de rotación R
+        double[][] R = {
+                { n1[0], n2[0], n3[0] },
+                { n1[1], n2[1], n3[1] },
+                { n1[2], n2[2], n3[2] }
+        };
 
-    public static int[][][] rotateRespectObject(int[][] face, int[] center, int[][] ends, double[] angles) {
+        // Calcular los ángulos de Euler
+        double[] angles = getEulerAngles(R);
+
+        return angles;
+    }
+
+    private static double[] normalize(double[] v) {
+        double norm = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+        return new double[] { v[0] / norm, v[1] / norm, v[2] / norm };
+    }
+
+    public static double[] getEulerAngles(double[][] R) {
+        double alpha, beta, gamma;
+
+        // Asegúrate de que R es una matriz 3x3
+        if (R.length != 3 || R[0].length != 3) {
+            throw new IllegalArgumentException("La matriz de rotación debe ser 3x3");
+        }
+
+        // Calcular beta
+        beta = Math.acos(R[2][2]);
+
+        if (beta != 0 && beta != Math.PI) {
+            // Calcular alpha
+            alpha = Math.atan2(R[1][2] / Math.sin(beta), R[0][2] / Math.sin(beta));
+            // Calcular gamma
+            gamma = Math.atan2(R[2][1] / Math.sin(beta), -R[2][0] / Math.sin(beta));
+        } else {
+            // Caso especial cuando beta es 0 o pi
+            alpha = 0;
+            if (beta == 0) {
+                gamma = Math.atan2(R[1][0], R[0][0]);
+            } else {
+                gamma = Math.atan2(-R[1][0], -R[0][0]);
+            }
+        }
+
+        // Devuelve los ángulos de Euler en un array
+        return new double[] { alpha, beta, gamma };
+    }
+
+    public static int[][] rotateRespectEuler(int[][] face, int[] center, double[] angles) {
+        int xc = center[0];
+        int yc = center[1];
+        int zc = center[2];
+
+        int x0 = xc + 100;
+        int y0 = yc + 100;
+        int z0 = zc + 100;
+
+        int[] origin = new int[]{xc, yc, zc};
+
+        // ---------- z rotation ----------
+        int[] zEnd = new int[]{xc, yc, z0};
+
+        int[][] rotatedFace = rotateAroundLine(face[0], face[1], face[2], origin, zEnd, angles[0]);
+
+        int[][] ends = rotateAroundLine(new int[]{x0, xc, xc}, new int[]{yc, y0, yc}, new int[]{zc, zc, z0}, origin, zEnd, angles[0]);
+
+        // ---------- y' rotation ----------
+        int[] yEnd = new int[]{ends[0][1], ends[1][1], ends[2][1]};
+
+        rotatedFace = rotateAroundLine(rotatedFace[0], rotatedFace[1], rotatedFace[2], origin, yEnd, angles[1]);
+
+        ends = rotateAroundLine(ends[0], ends[1], ends[2], origin, yEnd, angles[1]);
+
+        // ---------- z'' rotation ----------
+        int[] z1End = new int[]{ends[0][2], ends[1][2], ends[2][2]};
+
+        rotatedFace = rotateAroundLine(rotatedFace[0], rotatedFace[1], rotatedFace[2], origin, z1End, angles[2]);
+
+        ends = rotateAroundLine(ends[0], ends[1], ends[2], origin, z1End, angles[2]);
+
+        return rotatedFace;
+
+    }
+
+    public static int[][][] rotateAxis(int[][] face, int[] center, int[][] ends, double[] angles) {
         int xc = center[0];
         int yc = center[1];
         int zc = center[2];
@@ -459,7 +547,7 @@ public class Transformations {
 
     }
 
-    public static int[][] transform3D(int[][] points, int[] center, int[][] ends, double scale, double[] angles, double[] anglesAx, int[][][] axis) {
+    public static int[][] transform3D(int[][] points, int[] center, double scale, double[] angles, double[] anglesAx, int[][][] axis) {
         int[][] pointsRot = new int[points.length][points[0].length];
 
         for (int i = 0; i < points.length; i++) {
@@ -472,7 +560,7 @@ public class Transformations {
             }
         }
 
-        int[][] rotatedPoints = rotateRespectObject(pointsRot, center, ends, angles)[0];
+        int[][] rotatedPoints = rotateRespectEuler(pointsRot, center, angles);
         int[][] scaledPoints = scale3D(rotatedPoints[0], rotatedPoints[1], rotatedPoints[2], center[0], center[1], center[2], false, scale, scale, scale);
 
         return scaledPoints;
@@ -492,7 +580,7 @@ public class Transformations {
             }
         }
 
-        int[][] rotatedPoints = rotateRespectObject(pointsRot, center, angles);
+        int[][] rotatedPoints = rotateRespectAxis(pointsRot, center, angles);
         int[][] scaledPoints = scale3D(rotatedPoints[0], rotatedPoints[1], rotatedPoints[2], center[0], center[1], center[2], false, scale, scale, scale);
 
         return scaledPoints;
