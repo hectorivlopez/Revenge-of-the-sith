@@ -839,7 +839,7 @@ public class Draw {
     }
 
     public static void fillPolygon(int[] xPoints, int[] yPoints, int[] center, Color color, BufferedImage buffer) {
-        boolean graphics = false;
+        boolean graphics = true;
         if(!graphics) {
             int nPoints = xPoints.length;
 
