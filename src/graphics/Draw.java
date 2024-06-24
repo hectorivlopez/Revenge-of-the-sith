@@ -839,52 +839,54 @@ public class Draw {
     }
 
     public static void fillPolygon(int[] xPoints, int[] yPoints, int[] center, Color color, BufferedImage buffer) {
-        int nPoints = xPoints.length;
+        boolean graphics = false;
+        if(!graphics) {
+            int nPoints = xPoints.length;
 
-        // Draw the polygon outline
-        drawPolygon(xPoints, yPoints, color, buffer);
+            drawPolygon(xPoints, yPoints, color, buffer);
 
-        // Calculate the length of each side and find the maximum length
-        double maxSideLength = 0;
-        for (int i = 0; i < nPoints; i++) {
-            int nextIndex = (i + 1) % nPoints;
-            double sideLength = Math.sqrt(Math.pow(xPoints[nextIndex] - xPoints[i], 2) +
-                    Math.pow(yPoints[nextIndex] - yPoints[i], 2));
-            if (sideLength > maxSideLength) {
-                maxSideLength = sideLength;
+            double maxSideLength = 0;
+            for (int i = 0; i < nPoints; i++) {
+                int nextIndex = (i + 1) % nPoints;
+                double sideLength = Math.sqrt(Math.pow(xPoints[nextIndex] - xPoints[i], 2) +
+                        Math.pow(yPoints[nextIndex] - yPoints[i], 2));
+                if (sideLength > maxSideLength) {
+                    maxSideLength = sideLength;
+                }
+            }
+
+            double area = 0;
+            for (int i = 0; i < nPoints; i++) {
+                int nextIndex = (i + 1) % nPoints;
+                area += xPoints[i] * yPoints[nextIndex] - yPoints[i] * xPoints[nextIndex];
+            }
+            area = Math.abs(area) / 2.0;
+
+            if (area > maxSideLength * 2 + 4) {
+                int[] centroid = Utils.calCentroid(new int[][]{xPoints, yPoints});
+
+                int startX = center != null ? center[0] : centroid[0];
+                int startY = center != null ? center[1] : centroid[1];
+
+                int[] start = Utils.adjustStartFillPoint(xPoints, yPoints, startX, startY, buffer);
+                startX = start[0];
+                startY = start[1];
+
+
+                if (Utils.isPointInPolygon(startX, startY, xPoints, yPoints) &&
+                        startX >= 0 && startX < buffer.getWidth() &&
+                        startY >= 0 && startY < buffer.getHeight()) {
+                    Utils.floodFill(startX, startY, color, buffer);
+                }
             }
         }
-
-        // Calculate the area of the polygon using the Shoelace formula
-        double area = 0;
-        for (int i = 0; i < nPoints; i++) {
-            int nextIndex = (i + 1) % nPoints;
-            area += xPoints[i] * yPoints[nextIndex] - yPoints[i] * xPoints[nextIndex];
+        else {
+            Graphics g = buffer.getGraphics();
+            g.setColor(color);
+            g.fillPolygon(xPoints, yPoints, xPoints.length);
         }
-        area = Math.abs(area) / 2.0;
-
-        // Check if the polygon has a non-zero area
-        if (area > maxSideLength * 2 + 4) {
-            // Calculate centroid of the polygon
-            int[] centroid = Utils.calCentroid(new int[][]{xPoints, yPoints});
-
-            // Determine the starting point for flood fill
-            int startX = center != null ? center[0] : centroid[0];
-            int startY = center != null ? center[1] : centroid[1];
-
-            // Adjust if the starting point is not in the screen
-            int[] start = Utils.adjustStartFillPoint(xPoints, yPoints, startX, startY, buffer);
-            startX = start[0];
-            startY = start[1];
 
 
-            // Ensure the starting point is inside the polygon and within image boundaries
-            if (Utils.isPointInPolygon(startX, startY, xPoints, yPoints) &&
-                    startX >= 0 && startX < buffer.getWidth() &&
-                    startY >= 0 && startY < buffer.getHeight()) {
-                Utils.floodFill(startX, startY, color, buffer);
-            }
-        }
     }
 
 
