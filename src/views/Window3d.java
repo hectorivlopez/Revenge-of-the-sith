@@ -35,7 +35,7 @@ public class Window3d extends JFrame implements ActionListener, MouseListener, M
         }
 
         this.clip = AudioSystem.getClip();
-        playMusic("battle_over_coruscant");
+        //playMusic("battle_over_coruscant");
 
         initComponents();
 
@@ -166,7 +166,7 @@ public class Window3d extends JFrame implements ActionListener, MouseListener, M
         canvasPanel.director[1] = yDirInit + yDirector;
         canvasPanel.repaint();
 
-        directorLabel.setText("P(" + canvasPanel.director[0] + ", " + canvasPanel.director[1] + ", " + canvasPanel.director[2] + ")");
+        //directorLabel.setText("P(" + canvasPanel.director[0] + ", " + canvasPanel.director[1] + ", " + canvasPanel.director[2] + ")");
     }
 
     @Override

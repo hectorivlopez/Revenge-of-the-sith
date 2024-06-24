@@ -1309,13 +1309,13 @@ public class Venator {
             drawSurface(scaledBottomRightUp, director, projection, -1, false, borderGray, new Color(100, 99, 98), buffer);
         }
         if (povLeftBack) {
-            drawMotor(new int[]{xc + 288, yc + 80, zc - 5}, 18, 50, 18, director, projection, motor1Color, buffer);
-            drawMotor(new int[]{xc + 288, yc + 40, zc - 12}, 17, 140, 18, director, projection, motor2Color, buffer);
+            drawMotor(new int[]{xc + 288, yc + 80, zc - 5}, 18, 50, 12, director, projection, motor1Color, buffer);
+            drawMotor(new int[]{xc + 288, yc + 40, zc - 12}, 17, 140, 12, director, projection, motor2Color, buffer);
             drawMotor(new int[]{xc + 288, yc + 35, zc + 15}, 10, 50, 10, director, projection, motor3Color, buffer);
 
         } else {
-            drawMotor(new int[]{xc + 288, yc - 80, zc - 5}, 18, 50, 18, director, projection, motor4Color, buffer);
-            drawMotor(new int[]{xc + 288, yc - 40, zc - 12}, 17, 140, 18, director, projection, motor5Color, buffer);
+            drawMotor(new int[]{xc + 288, yc - 80, zc - 5}, 18, 50, 12, director, projection, motor4Color, buffer);
+            drawMotor(new int[]{xc + 288, yc - 40, zc - 12}, 17, 140, 12, director, projection, motor5Color, buffer);
             drawMotor(new int[]{xc + 288, yc - 35, zc + 15}, 10, 50, 10, director, projection, motor6Color, buffer);
         }
 
@@ -1325,15 +1325,15 @@ public class Venator {
 
         if (!povLeftBack) {
             drawMotor(new int[]{xc + 288, yc + 35, zc + 15}, 10, 50, 10, director, projection, motor3Color, buffer);
-            drawMotor(new int[]{xc + 288, yc + 40, zc - 12}, 17, 140, 18, director, projection, motor2Color, buffer);
-            drawMotor(new int[]{xc + 288, yc + 80, zc - 5}, 18, 50, 18, director, projection, motor1Color, buffer);
+            drawMotor(new int[]{xc + 288, yc + 40, zc - 12}, 17, 140, 12, director, projection, motor2Color, buffer);
+            drawMotor(new int[]{xc + 288, yc + 80, zc - 5}, 18, 50, 12, director, projection, motor1Color, buffer);
             if (povUpBack)
                 drawMotor(new int[]{xc + 288, yc + 35, zc + 15}, 10, 50, 10, director, projection, motor3Color, buffer);
 
         } else {
             drawMotor(new int[]{xc + 288, yc - 35, zc + 15}, 10, 50, 10, director, projection, motor6Color, buffer);
-            drawMotor(new int[]{xc + 288, yc - 40, zc - 12}, 17, 140, 18, director, projection, motor5Color, buffer);
-            drawMotor(new int[]{xc + 288, yc - 80, zc - 5}, 18, 50, 18, director, projection, motor4Color, buffer);
+            drawMotor(new int[]{xc + 288, yc - 40, zc - 12}, 17, 140, 12, director, projection, motor5Color, buffer);
+            drawMotor(new int[]{xc + 288, yc - 80, zc - 5}, 18, 50, 12, director, projection, motor4Color, buffer);
             if (povUpBack)
                 drawMotor(new int[]{xc + 288, yc - 35, zc + 15}, 10, 50, 10, director, projection, motor3Color, buffer);
 
@@ -1418,15 +1418,17 @@ public class Venator {
 
         int[] x0Points = new int[numSides];
         int[] xfPoints = new int[numSides];
+        int[] xf2Points = new int[numSides];
 
         for (int i = 0; i < numSides; i++) {
             x0Points[i] = x0;
             xfPoints[i] = x0 + length;
+            xf2Points[i] = x0 + length + 2;
         }
 
         int[][] face1 = new int[][]{x0Points, yPoints, zPoints};
         int[][] face2 = new int[][]{xfPoints, yPoints, zPoints};
-        int[][] face3 = new int[][]{xfPoints, yPoints2, zPoints2};
+        int[][] face3 = new int[][]{xf2Points, yPoints2, zPoints2};
 
         int[][] transformedFace1 = transform3D(face1, center, scale, angles, null, null);
         int[][] transformedFace2 = transform3D(face2, center, scale, angles, null, null);
