@@ -409,7 +409,7 @@ public class Transformations {
         return angles;
     }
 
-    private static double[] normalize(double[] v) {
+    public static double[] normalize(double[] v) {
         double norm = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
         return new double[] { v[0] / norm, v[1] / norm, v[2] / norm };
     }
