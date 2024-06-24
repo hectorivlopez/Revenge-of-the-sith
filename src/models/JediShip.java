@@ -103,8 +103,14 @@ public class JediShip {
     int[][][] cabinFrontLevels;
     int[][][] cabinBackLevels;
 
+    int[][] cabinBackFace;
 
-    public JediShip(int xc, int yc, int zc, int[] director, String projection, BufferedImage buffer) {
+    int[][][] cabinFront;
+
+    Color shipColor;
+
+
+    public JediShip(int xc, int yc, int zc, int[] director, String projection, Color shipColor, BufferedImage buffer) {
         this.xc = xc;
         this.yc = yc;
         this.zc = zc;
@@ -137,11 +143,13 @@ public class JediShip {
         this.leftAxis = new int[][]{new int[]{xc + 240, yc - 30, zc}, new int[]{xc - 10, yc - 30, zc},};
         this.rightAxis = new int[][]{new int[]{xc + 240, yc + 30, zc}, new int[]{xc - 10, yc + 30, zc},};
 
-        this.cabinSides = 16;
+        this.cabinSides = 32;
 
         this.director = director;
         this.projection = projection;
         this.buffer = buffer;
+
+        this.shipColor = shipColor;
 
         update();
     }
@@ -334,6 +342,7 @@ public class JediShip {
     }
 
     public void calWingSides(ArrayList<Surface> surfaces, int[][] top, int[][] bottom, int direction, Color sideColor) {
+        int r = 120;
         for (int i = 0; i < 9; i++) {
             int[][] side = new int[3][4];
             int next = i + 1;
@@ -342,22 +351,22 @@ public class JediShip {
                 side[j] = new int[]{top[j][i], top[j][next], bottom[j][next], bottom[j][i]};
             }
 
-            surfaces.add(new Surface(side, direction, Color.gray, sideColor));
+            surfaces.add(new Surface(side, direction, Color.gray, new Color(r - i, r - i, r - i)));
         }
 
         int[][] side = new int[3][4];
         for (int j = 0; j < 3; j++) {
             side[j] = new int[]{top[j][top[0].length - 1], top[j][0], bottom[j][0], bottom[j][top[0].length - 1]};
         }
-        surfaces.add(new Surface(side, direction, Color.gray, sideColor));
+        surfaces.add(new Surface(side, direction, Color.gray, new Color(121, 121, 121)));
     }
 
     public void calWingsSides() {
         leftWingSides = new ArrayList<Surface>();
         rightWingSides = new ArrayList<Surface>();
 
-        calWingSides(leftWingSides, scaledLeftWingTop, scaledLeftWingBottom, 1, Color.black);
-        calWingSides(rightWingSides, scaledRightWingTop, scaledRightWingBottom, -1, new Color(0, 1, 0));
+        calWingSides(leftWingSides, scaledLeftWingTop, scaledLeftWingBottom, 1, new Color(120, 120, 120));
+        calWingSides(rightWingSides, scaledRightWingTop, scaledRightWingBottom, -1, new Color(120, 121, 120));
     }
 
     public void calCabin() {
@@ -379,8 +388,16 @@ public class JediShip {
         int[] z4Points = new int[numSides];
         int[] y4Points = new int[numSides];
 
+        int[] z4BackPoints = new int[numSides];
+        int[] y4BackPoints = new int[numSides];
+
         int[] z5Points = new int[numSides];
         int[] y5Points = new int[numSides];
+
+        int[] xBackPoints = new int[14];
+        int[] zBackPoints = new int[14];
+        int[] yBackPoints = new int[14];
+        //7, 8, 9, 10, 11, 23, 24, 25, 26, 27
 
         for (int i = 0; i < numSides; i++) {
             double angle = i * angleStep + angleStep / 2;
@@ -399,9 +416,78 @@ public class JediShip {
 
             z4Points[i] = (int) (zc + 50 * Math.cos(angle)) + 10;
             y4Points[i] = (int) (yc + 50 * Math.sin(angle));
+        }
+
+        for(int i = 0; i < 10; i++) {
+            double angle = i * angleStep + angleStep / 2;
+
+            z4BackPoints[i] = (int) (zc + 50 * Math.cos(angle)) + 10;
+            y4BackPoints[i] = (int) (yc + 50 * Math.sin(angle));
 
             z5Points[i] = (int) (zc + 40 * Math.cos(angle)) + 10;
             y5Points[i] = (int) (yc + 40 * Math.sin(angle));
+        }
+
+        for(int i = 10; i < 22; i++) {
+            double angle = i * angleStep + angleStep / 2;
+
+            z4BackPoints[i] = zc - 24;
+            y4BackPoints[i] = (int) (yc + 50 * Math.sin(angle));
+
+
+            z5Points[i] = zc - 24;
+            y5Points[i] = (int) (yc + 40 * Math.sin(angle));
+
+            xBackPoints[i - 10] = xc - 100;
+            zBackPoints[i - 10] = (int) (zc + 50 * Math.cos(angle)) + 7;
+            yBackPoints[i - 10] = (int) (yc + 50 * Math.sin(angle));
+        }
+
+        for(int i = 22; i < numSides; i++) {
+            double angle = i * angleStep + angleStep / 2;
+
+            z4BackPoints[i] = (int) (zc + 50 * Math.cos(angle)) + 10;
+            y4BackPoints[i] = (int) (yc + 50 * Math.sin(angle));
+
+            z5Points[i] = (int) (zc + 40 * Math.cos(angle)) + 10;
+            y5Points[i] = (int) (yc + 40 * Math.sin(angle));
+        }
+
+        for(int i = 9; i < 23; i++) {
+            double angle = i * angleStep + angleStep / 2;
+
+            z4BackPoints[i] = zc - 24;
+            y4BackPoints[i] = (int) (yc + 50 * Math.sin(angle));
+
+            z5Points[i] = zc - 24;
+            y5Points[i] = (int) (yc + 40 * Math.sin(angle));
+
+            xBackPoints[i - 9] = xc - 100;
+            zBackPoints[i - 9] = (int) (zc + 50 * Math.cos(angle)) + 7;
+            yBackPoints[i - 9] = (int) (yc + 50 * Math.sin(angle));
+        }
+
+        // Front
+
+        int[] zFrontPoints = new int[8];
+        int[] yFrontPoints = new int[8];
+        int[] xFrontPoints = new int[8];
+
+        int[] z0FrontPoints = new int[8];
+        int[] y0FrontPoints = new int[8];
+        int[] x0FrontPoints = new int[8];
+
+        for(int i = 0; i < 8; i++) {
+            double angleStep2 = 2 * Math.PI / 8; // Paso del ángulo en radianes
+            double angle = i * angleStep2 + angleStep2 / 2;
+
+            z0FrontPoints[i] = (int) (zc + 25 * Math.cos(angle)) + 5;
+            y0FrontPoints[i] = (int) (yc + 25 * Math.sin(angle));
+            x0FrontPoints[i] = xc;
+
+            zFrontPoints[i] = (int) (zc + 15 * Math.cos(angle)) + 5;
+            yFrontPoints[i] = (int) (yc + 15 * Math.sin(angle));
+            xFrontPoints[i] = xc + 5;
         }
 
         int[] x0Points = new int[numSides];
@@ -425,30 +511,53 @@ public class JediShip {
         int[][] face2 = new int[][]{x2Points, y2Points, z2Points};
         int[][] face3 = new int[][]{x3Points, y3Points, z3Points};
         int[][] face4 = new int[][]{x4Points, y4Points, z4Points};
+        int[][] faceBack4 = new int[][]{x4Points, y4BackPoints, z4BackPoints};
         int[][] face5 = new int[][]{x5Points, y5Points, z5Points};
+
+        int[][] backFace = new int[][]{xBackPoints, yBackPoints, zBackPoints};
+
+        int[][] frontFace0 = new int[][]{x0FrontPoints, y0FrontPoints, z0FrontPoints};
+        int[][] frontFace = new int[][]{xFrontPoints, yFrontPoints, zFrontPoints};
 
         int[][] transformedFace0 = transform3D(face0, center, scale, angles, null, null);
         int[][] transformedFace1 = transform3D(face1, center, scale, angles, null, null);
         int[][] transformedFace2 = transform3D(face2, center, scale, angles, null, null);
         int[][] transformedFace3 = transform3D(face3, center, scale, angles, null, null);
         int[][] transformedFace4 = transform3D(face4, center, scale, angles, null, null);
+
+        int[][] transformedFaceBack4 = transform3D(faceBack4, center, scale, angles, null, null);
         int[][] transformedFace5 = transform3D(face5, center, scale, angles, null, null);
 
-        cabinFrontLevels = new int[][][]{transformedFace0, transformedFace1, transformedFace2, transformedFace3,};
-        cabinBackLevels = new int[][][]{transformedFace3, transformedFace4, transformedFace5};
+        int[][] transformedFrontFace0 = transform3D(frontFace0, center, scale, angles, null, null);
+        int[][] transformedFrontFace = transform3D(frontFace, center, scale, angles, null, null);
+
+        cabinBackFace = transform3D(backFace, center, scale, angles, null, null);
+
+        cabinFrontLevels = new int[][][]{transformedFace0, transformedFace1, transformedFace2, transformedFace3, transformedFace4};
+        cabinBackLevels = new int[][][]{transformedFaceBack4, transformedFace5};
+
+        cabinFront = new int[][][]{transformedFrontFace0, transformedFrontFace};
+
     }
 
 
-
-    // ------------------------------ Drawing ------------------------------
-    public void draw(boolean perspective, int[] director, String projection, BufferedImage buffer, double ang) {
+      // ------------------------------ Drawing ------------------------------
+    public void draw(boolean perspective, int[] director, String projection, boolean develop, BufferedImage buffer, double ang) {
         this.ang = ang;
 
+        int r = shipColor.getRed();
+        int g = shipColor.getGreen();
+        int b = shipColor.getBlue();
 
-        Color leftTopColor = Color.red;
-        Color rightTopColor = Color.green;
-        Color leftBottomColor = Color.pink;
-        Color rightBottomColor = Color.orange;
+        Color leftTopColor = new Color(r, g, b);
+        Color rightTopColor = new Color(r + 1, g, b);
+        Color leftBottomColor = new Color(r, g + 1, b);
+        Color rightBottomColor = new Color(r, g, b + 1);
+
+        boolean[] povCenter = calPovCenter(center, director, projection);
+        povUp = povCenter[0];
+        povLeft = povCenter[1];
+        povFront = povCenter[2];
 
         /*drawCabinFront(director, projection, true, buffer);
         drawCabinBack(director, projection, true, buffer);
@@ -485,7 +594,8 @@ public class JediShip {
 
                         drawLeftWingTopBack(director, projection, leftTopColor, buffer);
                         drawLeftWingTop(director, projection, leftTopColor, buffer);
-                    } else {
+                    }
+                    else {
                         drawSidesLeft(director, projection, buffer);
 
                         drawLeftWingBottomBack(director, projection, leftBottomColor, buffer);
@@ -507,24 +617,127 @@ public class JediShip {
                     }
                 } else {
                     if (povLeft) {
+                        drawSidesRight(director, projection, buffer);
 
+                        drawRightWingBottom(director, projection, rightBottomColor, buffer);
+                        drawRightWingBottomBack(director, projection, rightBottomColor, buffer);
+
+                        drawRightWingTop(director, projection, rightTopColor, buffer);
+                        drawRightWingTopBack(director, projection, rightTopColor, buffer);
+
+                        drawCabinFront(director, projection, true, buffer);
+                        drawCabinBack(director, projection, true, buffer);
+
+                        drawSidesLeft(director, projection, buffer);
+
+                        drawLeftWingBottom(director, projection, leftBottomColor, buffer);
+                        drawLeftWingBottomBack(director, projection, leftBottomColor, buffer);
+
+                        drawLeftWingTop(director, projection, leftTopColor, buffer);
+                        drawLeftWingTopBack(director, projection, leftTopColor, buffer);
                     } else {
+                        drawSidesLeft(director, projection, buffer);
 
+                        drawLeftWingBottom(director, projection, leftBottomColor, buffer);
+                        drawLeftWingBottomBack(director, projection, leftBottomColor, buffer);
+
+                        drawLeftWingTop(director, projection, leftTopColor, buffer);
+                        drawLeftWingTopBack(director, projection, leftTopColor, buffer);
+
+                        drawCabinFront(director, projection, true, buffer);
+                        drawCabinBack(director, projection, true, buffer);
+
+                        drawSidesRight(director, projection, buffer);
+
+                        drawRightWingBottom(director, projection, rightBottomColor, buffer);
+                        drawRightWingBottomBack(director, projection, rightBottomColor, buffer);
+
+                        drawRightWingTop(director, projection, rightTopColor, buffer);
+                        drawRightWingTopBack(director, projection, rightTopColor, buffer);
                     }
+
                 }
 
             } else {
                 if (povFront) {
                     if (povLeft) {
+                        drawSidesRight(director, projection, buffer);
 
+                        drawRightWingTopBack(director, projection, rightTopColor, buffer);
+                        drawRightWingTop(director, projection, rightTopColor, buffer);
+
+                        drawRightWingBottomBack(director, projection, rightBottomColor, buffer);
+                        drawRightWingBottom(director, projection, rightBottomColor, buffer);
+
+                        drawCabinBack(director, projection, true, buffer);
+                        drawCabinFront(director, projection, true, buffer);
+
+                        drawSidesLeft(director, projection, buffer);
+
+                        drawLeftWingTopBack(director, projection, leftTopColor, buffer);
+                        drawLeftWingTop(director, projection, leftTopColor, buffer);
+
+                        drawLeftWingBottomBack(director, projection, leftBottomColor, buffer);
+                        drawLeftWingBottom(director, projection, leftBottomColor, buffer);
                     } else {
+                        drawSidesLeft(director, projection, buffer);
 
+                        drawLeftWingTopBack(director, projection, leftTopColor, buffer);
+                        drawLeftWingTop(director, projection, leftTopColor, buffer);
+
+                        drawLeftWingBottomBack(director, projection, leftBottomColor, buffer);
+                        drawLeftWingBottom(director, projection, leftBottomColor, buffer);
+
+                        drawCabinBack(director, projection, true, buffer);
+                        drawCabinFront(director, projection, true, buffer);
+
+                        drawSidesRight(director, projection, buffer);
+
+                        drawRightWingTopBack(director, projection, rightTopColor, buffer);
+                        drawRightWingTop(director, projection, rightTopColor, buffer);
+
+                        drawRightWingBottomBack(director, projection, rightBottomColor, buffer);
+                        drawRightWingBottom(director, projection, rightBottomColor, buffer);
                     }
                 } else {
                     if (povLeft) {
+                        drawSidesRight(director, projection, buffer);
 
+                        drawRightWingTop(director, projection, rightTopColor, buffer);
+                        drawRightWingTopBack(director, projection, rightTopColor, buffer);
+
+                        drawRightWingBottom(director, projection, rightBottomColor, buffer);
+                        drawRightWingBottomBack(director, projection, rightBottomColor, buffer);
+
+                        drawCabinFront(director, projection, true, buffer);
+                        drawCabinBack(director, projection, true, buffer);
+
+                        drawSidesLeft(director, projection, buffer);
+
+                        drawLeftWingTop(director, projection, leftTopColor, buffer);
+                        drawLeftWingTopBack(director, projection, leftTopColor, buffer);
+
+                        drawLeftWingBottom(director, projection, leftBottomColor, buffer);
+                        drawLeftWingBottomBack(director, projection, leftBottomColor, buffer);
                     } else {
+                        drawSidesLeft(director, projection, buffer);
 
+                        drawLeftWingTop(director, projection, leftTopColor, buffer);
+                        drawLeftWingTopBack(director, projection, leftTopColor, buffer);
+
+                        drawLeftWingBottom(director, projection, leftBottomColor, buffer);
+                        drawLeftWingBottomBack(director, projection, leftBottomColor, buffer);
+
+                        drawCabinFront(director, projection, true, buffer);
+                        drawCabinBack(director, projection, true, buffer);
+
+                        drawSidesRight(director, projection, buffer);
+
+                        drawRightWingTop(director, projection, rightTopColor, buffer);
+                        drawRightWingTopBack(director, projection, rightTopColor, buffer);
+
+                        drawRightWingBottom(director, projection, rightBottomColor, buffer);
+                        drawRightWingBottomBack(director, projection, rightBottomColor, buffer);
                     }
                 }
             }
@@ -549,6 +762,12 @@ public class JediShip {
             drawLeftWingTop(director, projection, leftTopColor, buffer);
         }
 
+
+
+        if(develop) {
+            drawPlanes(director, projection, buffer);
+            drawAxis(director, projection, true, buffer);
+        }
     }
 
     // Top
@@ -605,17 +824,131 @@ public class JediShip {
 
 
     public void drawCabinFront(int[] director, String projection, boolean fill, BufferedImage buffer) {
-        drawPolyhedronFaces(cabinFrontLevels, new int[]{1}, 1, director, projection, Color.white, Color.blue, buffer);
+        drawPolyhedronFaces(cabinFrontLevels, new int[]{1}, 1, director, projection, null, new Color(28, 47, 55), buffer);
+        drawPolyhedronFaces(
+                cabinFrontLevels,
+                new int[]{
+                        0, 1,
+                        34, 35, 36, 38, 39, 40, 41, 57, 58, 59, 60, 62, 63, 64, 65,
+                        66, 67, 68, 70, 71, 72, 73, 89, 90, 91, 92, 94, 95, 96, 97
+                },
+                1,
+                director,
+                projection,
+                Color.gray,
+                new Color(135, 135, 135),
+                buffer
+        );
+
+        drawPolyhedronFaces(cabinFront, new int[]{0}, -1, director, projection, Color.gray, null, buffer);
+
     }
 
     public void drawCabinBack(int[] director, String projection, boolean fill, BufferedImage buffer) {
-        drawPolyhedronFaces(cabinBackLevels, null, 1, director, projection, Color.white, Color.cyan, buffer);
+        if(povUp && povFront) {
+            drawSurface(cabinBackFace, director, projection, 1, false, Color.gray, new Color(120, 120, 120), buffer);
+            drawMotor(new int[]{xc - 150, yc + 15, zc - 28}, 9, 80, 8, director, projection, Color.black, buffer );
+            drawMotor(new int[]{xc - 150, yc - 15, zc - 28}, 9, 80, 8, director, projection, new Color(0, 1, 0), buffer );
+        }
+
+        drawPolyhedronFaces(cabinBackLevels, new int[] {0}, 1, director, projection, Color.gray, new Color(130, 130, 130), buffer);
+
+        if(!povUp) {
+            drawSurface(cabinBackFace, director, projection, 1, false, Color.gray, new Color(120, 120, 120), buffer);
+            drawMotor(new int[]{xc - 150, yc + 15, zc - 28}, 9, 80, 8, director, projection, Color.black, buffer );
+            drawMotor(new int[]{xc - 150, yc - 15, zc - 28}, 9, 80, 8, director, projection, new Color(0, 1, 0), buffer );
+
+        }
     }
 
     public void drawArturito() {
 
     }
 
+    private void drawMotor(int[] p0, double radius, int length, int numSides, int[] director, String projection, Color color, BufferedImage buffer) {
+        int x0 = p0[0];
+
+        int[] zPoints = new int[numSides];
+        int[] yPoints = new int[numSides];
+        double angleStep = 2 * Math.PI / numSides; // Paso del ángulo en radianes
+
+        for (int i = 0; i < numSides; i++) {
+            double angle = i * angleStep;
+            zPoints[i] = (int) (p0[2] + radius * Math.cos(angle));
+            yPoints[i] = (int) (p0[1] + radius * Math.sin(angle));
+        }
+
+        int[] zPoints2 = new int[numSides];
+        int[] yPoints2 = new int[numSides];
+
+        for (int i = 0; i < numSides; i++) {
+            double angle = i * angleStep;
+            zPoints2[i] = (int) (p0[2] + (radius - 1) * Math.cos(angle));
+            yPoints2[i] = (int) (p0[1] + (radius - 1) * Math.sin(angle));
+        }
+
+        int[] x0Points = new int[numSides];
+        int[] xfPoints = new int[numSides];
+
+        for (int i = 0; i < numSides; i++) {
+            x0Points[i] = x0;
+            xfPoints[i] = x0 - length;
+        }
+
+        int[][] face1 = new int[][]{x0Points, yPoints, zPoints};
+        int[][] face2 = new int[][]{xfPoints, yPoints, zPoints};
+        int[][] face3 = new int[][]{xfPoints, yPoints2, zPoints2};
+
+        int[][] transformedFace1 = transform3D(face1, center, scale, angles, null, null);
+        int[][] transformedFace2 = transform3D(face2, center, scale, angles, null, null);
+        int[][] transformedFace3 = transform3D(face3, center, scale, angles, null, null);
+
+        int[][][] faces = new int[][][]{transformedFace1, transformedFace2};
+
+        drawPolyhedronFaces(faces, new int[]{0}, 1, director, projection, new Color(60, 60, 60), color, buffer);
+
+        drawSurface(transformedFace3, director, projection, 1, false, new Color(60, 60, 60), new Color(50, 128, 230), buffer);
+        //Draw.drawPolygon(zPoints, yPoints, Color.green, buffer);
+    }
+
+
+    public void drawPlanes(int[] director, String projection, BufferedImage buffer) {
+        drawSurface(rotatedXYPlane, director, projection, 0, false, Color.blue, null, buffer);
+        drawSurface(rotatedXZPlane, director, projection, 0, false, Color.green, null, buffer);
+        drawSurface(rotatedYZPlane, director, projection, 0, false, Color.red, null, buffer);
+
+    }
+
+    private void drawAxis(int[] director, String projection, boolean drawOriginal, BufferedImage buffer) {
+        int[][] projectedCenter = projection(new int[][]{new int[]{xc, 1, 1, 1}, new int[]{yc, 1, 1, 1}, new int[]{zc, 1, 1, 1}}, director, projection);
+
+        if(drawOriginal) {
+            int[][] originalEnds = new int[][]{
+                    new int[]{ends[0][0], ends[1][0], ends[2][0], 1},
+                    new int[]{ends[0][1], ends[1][1], ends[2][1], 1},
+                    new int[]{ends[0][2], ends[1][2], ends[2][2], 1},
+            };
+
+            int[][] projectedOriginalEnds = projection(originalEnds, director, projection);
+
+            drawLine(projectedCenter[0][0], projectedCenter[1][0], projectedOriginalEnds[0][0], projectedOriginalEnds[1][0], Color.pink, buffer);
+            drawLine(projectedCenter[0][0], projectedCenter[1][0], projectedOriginalEnds[0][1], projectedOriginalEnds[1][1], Color.orange, buffer);
+            drawLine(projectedCenter[0][0], projectedCenter[1][0], projectedOriginalEnds[0][2], projectedOriginalEnds[1][2], Color.cyan, buffer);
+        }
+
+        int[][] finalEnds = new int[][] {
+                new int[]{ends2[0][0], ends2[1][0], ends2[2][0], 1} ,
+                new int[]{ends2[0][1], ends2[1][1], ends2[2][1], 1}  ,
+                new int[]{ends2[0][2], ends2[1][2], ends2[2][2], 1},
+        };
+        int[][] projectedFinalEnds = projection(finalEnds, director, projection);
+
+        drawLine(projectedCenter[0][0], projectedCenter[1][0], projectedFinalEnds[0][0], projectedFinalEnds[1][0], Color.red, buffer);
+        drawLine(projectedCenter[0][0], projectedCenter[1][0], projectedFinalEnds[0][1], projectedFinalEnds[1][1], Color.green, buffer);
+        drawLine(projectedCenter[0][0], projectedCenter[1][0], projectedFinalEnds[0][2], projectedFinalEnds[1][2], Color.blue, buffer);
+
+
+    }
 
 
 
