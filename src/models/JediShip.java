@@ -104,6 +104,7 @@ public class JediShip {
     int[][][] cabinBackLevels;
 
     int[][] cabinBackFace;
+    int[][] cabinBackUp;
 
     int[][][] cabinFront;
 
@@ -192,8 +193,7 @@ public class JediShip {
         update();
     }
 
-    public synchronized void move(int dx, int dy, int dz) {
-
+    public synchronized void moveOnSpace(int dx, int dy, int dz) {
         for(int i = 0; i < 3; i++) {
             ends[i][0] += dx;
             ends[i][1] += dy;
@@ -204,11 +204,42 @@ public class JediShip {
             ends2[i][2] += dz;
         }
 
-        update();
-
         this.xc = this.xc + dx;
         this.yc = this.yc + dy;
         this.zc = this.zc + dz;
+
+        this.center[0] = xc;
+        this.center[1] = yc;
+        this.center[2] = zc;
+
+        update();
+    }
+
+    public synchronized void setPos(int xc, int yc, int zc) {
+        int dx = xc - this.xc ;
+        int dy = yc - this.yc ;
+        int dz = zc - this.zc ;
+
+        moveOnSpace(dx, dy, dz);
+    }
+
+    public synchronized void move(int dx, int dy, int dz) {
+        double[] xDir = normalize(new double[]{ends2[0][0] - xc, ends2[0][1] - yc, ends2[0][2] - zc});
+        double[] yDir = normalize(new double[]{ends2[1][0] - xc, ends2[1][1] - yc, ends2[1][2] - zc});
+        double[] zDir = normalize(new double[]{ends2[2][0] - xc, ends2[2][1] - yc, ends2[2][2] - zc});
+
+        double[] xMove = new double[]{xDir[0] * (double) dx, xDir[1] * (double) dx, xDir[2] * (double) dx};
+        double[] yMove = new double[]{yDir[0] * (double) dy, yDir[1] * (double) dy, yDir[2] * (double) dy};
+        double[] zMove = new double[]{zDir[0] * (double) dz, zDir[1] * (double) dz, zDir[2] * (double) dz};
+
+        int[] moveRes = new int[]{
+                (int) (xMove[0] + yMove[0] + zMove[0]),
+                (int) (xMove[1] + yMove[1] + zMove[1]),
+                (int) (xMove[2] + yMove[2] + zMove[2]),
+        };
+
+        moveOnSpace(moveRes[0], moveRes[1], moveRes[2]);
+
     }
 
 
@@ -417,6 +448,10 @@ public class JediShip {
         int[] z5Points = new int[numSides];
         int[] y5Points = new int[numSides];
 
+        int[] zBack1Points = new int[16];
+        int[] yBack1Points = new int[16];
+        int[] xBack1Points = new int[16];
+
         int[] xBackPoints = new int[14];
         int[] zBackPoints = new int[14];
         int[] yBackPoints = new int[14];
@@ -461,9 +496,7 @@ public class JediShip {
             z5Points[i] = zc - 24;
             y5Points[i] = (int) (yc + 40 * Math.sin(angle));
 
-            xBackPoints[i - 10] = xc - 100;
-            zBackPoints[i - 10] = (int) (zc + 50 * Math.cos(angle)) + 7;
-            yBackPoints[i - 10] = (int) (yc + 50 * Math.sin(angle));
+
         }
 
         for(int i = 22; i < numSides; i++) {
@@ -488,6 +521,36 @@ public class JediShip {
             xBackPoints[i - 9] = xc - 100;
             zBackPoints[i - 9] = (int) (zc + 50 * Math.cos(angle)) + 7;
             yBackPoints[i - 9] = (int) (yc + 50 * Math.sin(angle));
+        }
+
+
+        // Back up
+
+        for(int i = 0; i < 5; i++) {
+            double angleStep2 = 2 * Math.PI / 16; // Paso del ángulo en radianes
+            double angle = i * angleStep2 + angleStep2 / 2;
+
+            zBack1Points[i] = (int) (zc + 40 * Math.cos(angle)) + 10;
+            yBack1Points[i] = (int) (yc + 40 * Math.sin(angle));
+            xBack1Points[i] = (int) xc - 200;
+        }
+
+        for(int i = 5; i < 11; i++) {
+            double angleStep2 = 2 * Math.PI / 16; // Paso del ángulo en radianes
+            double angle = i * angleStep2 + angleStep2 / 2;
+
+            zBack1Points[i] = zc - 24;
+            yBack1Points[i] = (int) (yc + 40 * Math.sin(angle));
+            xBack1Points[i] = (int) xc - 200;
+        }
+
+        for(int i = 11; i < 16; i++) {
+            double angleStep2 = 2 * Math.PI / 16; // Paso del ángulo en radianes
+            double angle = i * angleStep2 + angleStep2 / 2;
+
+            zBack1Points[i] = (int) (zc + 40 * Math.cos(angle)) + 10;
+            yBack1Points[i] = (int) (yc + 40 * Math.sin(angle));
+            xBack1Points[i] = (int) xc - 200;
         }
 
         // Front
@@ -538,6 +601,7 @@ public class JediShip {
         int[][] face5 = new int[][]{x5Points, y5Points, z5Points};
 
         int[][] backFace = new int[][]{xBackPoints, yBackPoints, zBackPoints};
+        int[][] backUpFace = new int[][]{xBack1Points, yBack1Points, zBack1Points};
 
         int[][] frontFace0 = new int[][]{x0FrontPoints, y0FrontPoints, z0FrontPoints};
         int[][] frontFace = new int[][]{xFrontPoints, yFrontPoints, zFrontPoints};
@@ -555,6 +619,7 @@ public class JediShip {
         int[][] transformedFrontFace = transform3D(frontFace, center, scale, angles, null, null);
 
         cabinBackFace = transform3D(backFace, center, scale, angles, null, null);
+        cabinBackUp = transform3D(backUpFace, center, scale, angles, null, null);
 
         cabinFrontLevels = new int[][][]{transformedFace0, transformedFace1, transformedFace2, transformedFace3, transformedFace4};
         cabinBackLevels = new int[][][]{transformedFaceBack4, transformedFace5};
@@ -572,10 +637,15 @@ public class JediShip {
         int g = shipColor.getGreen();
         int b = shipColor.getBlue();
 
-        Color leftTopColor = new Color(r, g, b);
+        /*Color leftTopColor = new Color(r, g, b);
         Color rightTopColor = new Color(r + 1, g, b);
         Color leftBottomColor = new Color(r, g + 1, b);
-        Color rightBottomColor = new Color(r, g, b + 1);
+        Color rightBottomColor = new Color(r, g, b + 1);*/
+
+        Color leftTopColor = shipColor;
+        Color rightTopColor = shipColor;
+        Color leftBottomColor = shipColor;
+        Color rightBottomColor = shipColor;
 
         boolean[] povCenter = calPovCenter(center, director, projection);
         povUp = povCenter[0];
@@ -876,7 +946,8 @@ public class JediShip {
             drawMotor(new int[]{xc - 150, yc - 15, zc - 28}, 9, 80, 8, director, projection, new Color(0, 1, 0), buffer );
         }
 
-        drawPolyhedronFaces(cabinBackLevels, new int[] {0}, 1, director, projection, Color.gray, new Color(130, 130, 130), buffer);
+        drawSurface(cabinBackUp, director, projection, 1, false, Color.gray, new Color(131, 131, 130), buffer);
+        drawPolyhedronFaces(cabinBackLevels, new int[] {0, 1}, 1, director, projection, Color.gray, new Color(130, 130, 130), buffer);
 
         if(!povUp) {
             drawSurface(cabinBackFace, director, projection, 1, false, Color.gray, new Color(120, 120, 120), buffer);

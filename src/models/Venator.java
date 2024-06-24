@@ -324,8 +324,7 @@ public class Venator {
         update();
     }
 
-    public synchronized void move(int dx, int dy, int dz) {
-
+    public synchronized void moveOnSpace(int dx, int dy, int dz) {
         for(int i = 0; i < 3; i++) {
             ends[i][0] += dx;
             ends[i][1] += dy;
@@ -336,13 +335,43 @@ public class Venator {
             ends2[i][2] += dz;
         }
 
-        update();
-
         this.xc = this.xc + dx;
         this.yc = this.yc + dy;
         this.zc = this.zc + dz;
+
+        this.center[0] = xc;
+        this.center[1] = yc;
+        this.center[2] = zc;
+
+        update();
     }
 
+    public synchronized void setPos(int xc, int yc, int zc) {
+        int dx = xc - this.xc ;
+        int dy = yc - this.yc ;
+        int dz = zc - this.zc ;
+
+        moveOnSpace(dx, dy, dz);
+    }
+
+    public synchronized void move(int dx, int dy, int dz) {
+        double[] xDir = normalize(new double[]{ends2[0][0] - xc, ends2[0][1] - yc, ends2[0][2] - zc});
+        double[] yDir = normalize(new double[]{ends2[1][0] - xc, ends2[1][1] - yc, ends2[1][2] - zc});
+        double[] zDir = normalize(new double[]{ends2[2][0] - xc, ends2[2][1] - yc, ends2[2][2] - zc});
+
+        double[] xMove = new double[]{xDir[0] * (double) dx, xDir[1] * (double) dx, xDir[2] * (double) dx};
+        double[] yMove = new double[]{yDir[0] * (double) dy, yDir[1] * (double) dy, yDir[2] * (double) dy};
+        double[] zMove = new double[]{zDir[0] * (double) dz, zDir[1] * (double) dz, zDir[2] * (double) dz};
+
+        int[] moveRes = new int[]{
+                (int) (xMove[0] + yMove[0] + zMove[0]),
+                (int) (xMove[1] + yMove[1] + zMove[1]),
+                (int) (xMove[2] + yMove[2] + zMove[2]),
+        };
+
+        moveOnSpace(moveRes[0], moveRes[1], moveRes[2]);
+
+    }
 
     public synchronized void rotate(double[] angles) {
         int[][] cosa = new int[][]{
