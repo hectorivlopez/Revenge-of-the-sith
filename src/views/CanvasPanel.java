@@ -32,6 +32,10 @@ public class CanvasPanel extends JPanel {
     public String projection;
     public boolean starsDraw;
 
+    public int[][] stars;
+
+    int starsy;
+
     public CanvasPanel(int width, int height) {
         this.buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         this.starsBuffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -51,6 +55,7 @@ public class CanvasPanel extends JPanel {
         this.toRight = true;
 
         this.starsDraw = false;
+        this.starsy = 0;
 
         CustomThread scaleThread = new CustomThread(() -> {
             if (growing) {
@@ -86,12 +91,12 @@ public class CanvasPanel extends JPanel {
         moveThread.start();
 
         //this.venator = new Venator(450, 260, 310, director, projection, buffer);
-        this.venator = new Venator(440, 250, 310, director, projection, buffer);
+        this.venator = new Venator(350, 290, 610, director, projection, buffer);
         //venator.rotate(new double[]{0,0, 0});
 
 
-        this.anakin = new JediShip(350, 150, 500, director, projection, new Color(228, 175, 54), buffer);
-        this.obiWan = new JediShip(250, 300, 500, director, projection, new Color(152, 65, 60), buffer);
+        this.anakin = new JediShip(350, 200, 500, director, projection, new Color(228, 175, 54), buffer);
+        this.obiWan = new JediShip(250, 340, 500, director, projection, new Color(152, 65, 60), buffer);
 
 
        /* anakin.rotate(new double[]{Math.PI / 2, 0,  Math.PI / 2});
@@ -119,9 +124,20 @@ public class CanvasPanel extends JPanel {
         gStarsBuffer.setColor(new Color(10, 10, 10));
         gStarsBuffer.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-        int[][] stars = generateStars(width, height, 30, 100);
-        for(int i = 0; i < stars.length; i++) {
-            Draw.draw(stars[i][0], stars[i][1], Color.white, starsBuffer);
+        if(!starsDraw) {
+            stars = generateStars(width, height + 1800, 30, 400);
+            starsDraw = true;
+            CustomThread starsThread = new CustomThread(() -> {
+                for(int i = 0; i < stars.length; i++) {
+                    stars[i][0]++;
+                    if(stars[i][0] >= width) stars[i][0] = 0;
+                }
+            }, 3, () -> false);
+            starsThread.start();
+        }
+
+        for (int i = 0; i < stars.length; i++) {
+            Draw.draw(stars[i][0], stars[i][1] - 1200 - 300 + starsy, Color.white, starsBuffer);
         }
 
     }
@@ -165,25 +181,19 @@ public class CanvasPanel extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
 
-        if(!starsDraw) {
-            drawStars();
-            starsDraw = true;
-        }
+
+        drawStars();
+
+
 
         Graphics gBuffer = buffer.getGraphics();
         gBuffer.drawImage(starsBuffer, 0, 0, this);
-
-
-
 
 
         venator.draw(director, projection, false, buffer, angle);
 
         anakin.draw(true, director, projection, false, buffer, angle);
         obiWan.draw(true, director, projection, false, buffer, angle);
-
-
-
 
 
         g.drawImage(buffer, 0, 0, this);

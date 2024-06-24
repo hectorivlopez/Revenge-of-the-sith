@@ -1436,7 +1436,7 @@ public class Venator {
 
         drawPolyhedronFaces(faces, new int[]{0}, -1, director, projection, new Color(60, 60, 60), color, buffer);
 
-        drawSurface(transformedFace3, director, projection, -1, false, new Color(60, 60, 60), new Color(50, 128, 230), buffer);
+        if(!povFrontBack) drawSurface(transformedFace3, director, projection, -1, false, new Color(60, 60, 60), new Color(50, 128, 230), buffer);
         //Draw.drawPolygon(zPoints, yPoints, Color.green, buffer);
     }
 

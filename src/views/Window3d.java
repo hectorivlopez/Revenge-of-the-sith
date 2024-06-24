@@ -3,9 +3,12 @@ package views;
 
 import utils.CustomThread;
 
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 
 public class Window3d extends JFrame implements ActionListener, MouseListener, MouseMotionListener {
     private int width;
@@ -20,7 +23,9 @@ public class Window3d extends JFrame implements ActionListener, MouseListener, M
     boolean firstResize;
     public boolean isMacOS;
 
-    public Window3d() {
+    private Clip clip;
+
+    public Window3d() throws UnsupportedAudioFileException, LineUnavailableException, IOException, InterruptedException {
         this.isMacOS = System.getProperty("os.name").toLowerCase().contains("mac");
         if (isMacOS) {
             final JRootPane rootPane = this.getRootPane();
@@ -29,7 +34,11 @@ public class Window3d extends JFrame implements ActionListener, MouseListener, M
             System.setProperty("apple.laf.useScreenMenuBar", "true");
         }
 
+        this.clip = AudioSystem.getClip();
+        playMusic("battle_over_coruscant");
+
         initComponents();
+
 
         setVisible(true);
     }
@@ -41,7 +50,7 @@ public class Window3d extends JFrame implements ActionListener, MouseListener, M
         width = 1200;
         height = 600;
 
-        setSize(width, height + titleBarHeight + 40);
+        setSize(width, height + titleBarHeight/* + 40*/);
         setLocationRelativeTo(null);
         setLayout(null);
         firstResize = true;
@@ -83,7 +92,7 @@ public class Window3d extends JFrame implements ActionListener, MouseListener, M
         setBackground(new Color(10, 10, 10));
 
         bgPanel.setBounds(0, 0, width, height);
-        if (!firstResize) {
+        /*if (!firstResize) {
             bottomBar.remove(directorLabel);
             bgPanel.remove(bottomBar);
         }
@@ -100,12 +109,12 @@ public class Window3d extends JFrame implements ActionListener, MouseListener, M
         directorLabel.setVerticalAlignment(SwingConstants.CENTER);
         directorLabel.setForeground(Color.white);
         directorLabel.setText("P(" + canvasPanel.director[0] + ", " + canvasPanel.director[1] + ", " + canvasPanel.director[2] + ")");
-        bottomBar.add(directorLabel);
+        bottomBar.add(directorLabel);*/
         bgPanel.repaint();
 
         // Set new bounds for canvasPanel
-        canvasPanel.setBounds(0, 0, width, height - 40);
-        canvasPanel.resize(width, height - 40);
+        canvasPanel.setBounds(0, 0, width, height/* - 40*/);
+        canvasPanel.resize(width, height/* - 40*/);
         canvasPanel.repaint();
 
         firstResize = false;
@@ -166,7 +175,7 @@ public class Window3d extends JFrame implements ActionListener, MouseListener, M
     }
 
     // ---------------------------------------- Execution ----------------------------------------
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnsupportedAudioFileException, LineUnavailableException, IOException, InterruptedException {
         Window3d window = new Window3d();
 
         CustomThread thread = new CustomThread(() -> {
@@ -174,5 +183,19 @@ public class Window3d extends JFrame implements ActionListener, MouseListener, M
         }, 25, () -> false);
         thread.start();
 
+    }
+
+    public void playMusic(String song) throws UnsupportedAudioFileException, IOException, LineUnavailableException, InterruptedException {
+        File songPath = new File(System.getProperty("user.dir") + "/src/audio/" + song + ".wav");
+
+        if(songPath.exists()) {
+            AudioInputStream audioInput = AudioSystem.getAudioInputStream(songPath);
+
+            this.clip.open(audioInput);
+            this.clip.start();
+        }
+        else {
+            System.out.println(System.getProperty("user.dir"));
+        }
     }
 }

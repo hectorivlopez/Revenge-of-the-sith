@@ -109,6 +109,8 @@ public class JediShip {
 
     Color shipColor;
 
+    public int propulsor;
+
 
     public JediShip(int xc, int yc, int zc, int[] director, String projection, Color shipColor, BufferedImage buffer) {
         this.xc = xc;
@@ -150,6 +152,8 @@ public class JediShip {
         this.buffer = buffer;
 
         this.shipColor = shipColor;
+
+        this.propulsor = 5;
 
         update();
     }
@@ -904,31 +908,39 @@ public class JediShip {
 
         for (int i = 0; i < numSides; i++) {
             double angle = i * angleStep;
-            zPoints2[i] = (int) (p0[2] + (radius - 1) * Math.cos(angle));
-            yPoints2[i] = (int) (p0[1] + (radius - 1) * Math.sin(angle));
+            zPoints2[i] = (int) (p0[2] + (radius - 4) * Math.cos(angle));
+            yPoints2[i] = (int) (p0[1] + (radius - 4) * Math.sin(angle));
         }
 
         int[] x0Points = new int[numSides];
         int[] xfPoints = new int[numSides];
+        int[] xf2Points = new int[numSides];
 
         for (int i = 0; i < numSides; i++) {
             x0Points[i] = x0;
             xfPoints[i] = x0 - length;
+            xf2Points[i] = x0 - length - propulsor;
         }
 
         int[][] face1 = new int[][]{x0Points, yPoints, zPoints};
         int[][] face2 = new int[][]{xfPoints, yPoints, zPoints};
         int[][] face3 = new int[][]{xfPoints, yPoints2, zPoints2};
+        int[][] face4 = new int[][]{xf2Points, yPoints2, zPoints2};
 
         int[][] transformedFace1 = transform3D(face1, center, scale, angles, null, null);
         int[][] transformedFace2 = transform3D(face2, center, scale, angles, null, null);
         int[][] transformedFace3 = transform3D(face3, center, scale, angles, null, null);
+        int[][] transformedFace4 = transform3D(face4, center, scale, angles, null, null);
 
         int[][][] faces = new int[][][]{transformedFace1, transformedFace2};
+        int[][][] faces2 = new int[][][]{transformedFace3, transformedFace4};
 
         drawPolyhedronFaces(faces, new int[]{0}, 1, director, projection, new Color(60, 60, 60), color, buffer);
 
-        drawSurface(transformedFace3, director, projection, 1, false, new Color(60, 60, 60), new Color(50, 128, 230), buffer);
+        drawPolyhedronFaces(faces2, new int[]{0}, 1, director, projection, null, new Color(50, 128, 230), buffer);
+
+
+        //drawSurface(transformedFace3, director, projection, 1, false, new Color(60, 60, 60), new Color(50, 128, 230), buffer);
         //Draw.drawPolygon(zPoints, yPoints, Color.green, buffer);
     }
 
